@@ -1,0 +1,28 @@
+:root {
+    --primary: #FF7A00;
+    --bg-white: #FFFFFF;
+    --bg-gray: #F3F4F6;
+    --text-dark: #1E293B;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-gray);
+    color: var(--text-dark);
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+.hidden { display: none !important; }
+.glassmorphism {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+}
+.btn-primary {
+    background: var(--primary); color: white; padding: 10px 20px;
+    border: none; border-radius: 8px; cursor: pointer; transition: var(--transition);
+}
+.btn-primary:hover { background: #e66a00; transform: translateY(-2px); }
