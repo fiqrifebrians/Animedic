@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings | Animedic</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="app-sidebar"></aside>
+    <div class="main-wrapper">
+      <header class="top-header" id="app-header"></header>
+      <main class="page-content">
+        
+<div class="section-header">
+  <div>
+    <h1 style="font-size:1.45rem;">My Bookings</h1>
+    <p class="section-sub">Track your appointments and digital pet medical history.</p>
+  </div>
+  <div class="tabs-bar">
+    <button type="button" class="tab-btn active" id="bk-tab-bookings">Bookings</button>
+    <button type="button" class="tab-btn" id="bk-tab-records">Medical Records</button>
+  </div>
+</div>
+
+<section id="bk-panel-bookings">
+  <div id="bookings-list" style="display:flex;flex-direction:column;gap:14px;"></div>
+</section>
+
+<section id="bk-panel-records" style="display:none;">
+  <div id="medical-records-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+</section>
+
+<!-- Cancel Booking Modal -->
+<div class="modal-backdrop" id="cancel-booking-modal">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="cancel-modal-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <span class="badge badge-red mb-2">H-2 Hour Cancellation Policy</span>
+    <h2 style="font-size:1.28rem;margin-bottom:6px;">Cancel Booking</h2>
+    <div id="cancel-countdown-banner" class="notice-banner notice-amber mb-2"></div>
+
+    <form id="cancel-booking-form">
+      <div class="form-group">
+        <label class="form-label" for="cancel-reason-select">Select a Reason for Cancellation</label>
+        <select id="cancel-reason-select" class="form-select" required>
+          <option value="Schedule conflict or change of plans">Schedule conflict or change of plans</option>
+          <option value="Pet's condition improved">Pet's condition improved</option>
+          <option value="Decided to visit a nearby clinic instead">Decided to visit a nearby clinic instead</option>
+          <option value="Booked the wrong date, time, or service">Booked the wrong date, time, or service</option>
+          <option value="Provider confirmation taking too long">Provider confirmation taking too long</option>
+          <option value="Other personal reasons">Other personal reasons</option>
+        </select>
+      </div>
+      <div class="flex-between mt-2">
+        <button type="button" class="btn btn-outline" id="cancel-keep-btn">Keep Booking</button>
+        <button type="submit" class="btn btn-danger" id="cancel-confirm-btn">Confirm Cancellation</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Cancellation Refund Confirmation Modal -->
+<div class="modal-backdrop" id="refund-confirm-modal">
+  <div class="modal-box" style="text-align:center;">
+    <span class="badge badge-green mb-2">Refund Processed</span>
+    <h2 style="font-size:1.32rem;margin-bottom:8px;">Booking Cancelled</h2>
+    <p style="font-size:0.9rem;color:var(--slate-600);margin-bottom:20px;">
+      Your appointment has been cancelled and <strong>100% of your payment has been refunded to your account</strong>.
+    </p>
+    <button type="button" class="btn btn-primary btn-block" id="refund-ok-btn">Done</button>
+  </div>
+</div>
+
+      </main>
+    </div>
+  </div>
+  <nav class="bottom-nav" id="app-bottom-nav"></nav>
+
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const currentUser = AnimedicApp.initShell("bookings");
+    
+if (currentUser) {
+  const tabBookings = document.getElementById("bk-tab-bookings");
+  const tabRecords = document.getElementById("bk-tab-records");
+  const panelBookings = document.getElementById("bk-panel-bookings");
+  const panelRecords = document.getElementById("bk-panel-records");
+  const cancelModal = document.getElementById("cancel-booking-modal");
+  const refundModal = document.getElementById("refund-confirm-modal");
+
+  let activeCancelBooking = null;
+  let countdownTimer = null;
+
+  function switchBkTab(tab) {
+    tabBookings.classList.toggle("active", tab === "bookings");
+    tabRecords.classList.toggle("active", tab === "records");
+    panelBookings.style.display = tab === "bookings" ? "block" : "none";
+    panelRecords.style.display = tab === "records" ? "block" : "none";
+  }
+
+  tabBookings.onclick = () => switchBkTab("bookings");
+  tabRecords.onclick = () => switchBkTab("records");
+  if (window.location.hash === "#records") switchBkTab("records");
+
+  function getStepDefs(type) {
+    if (type === "Home-Visit Vet") {
+      return [
+        { active: "Payment successful", done: "Payment successful" },
+        { active: "Waiting for the veterinarian to confirm", done: "Booking confirmed" },
+        { active: "Veterinarian is on the way", done: "Veterinarian arrived" },
+        { active: "Your pet is currently being treated", done: "Home-visit complete" }
+      ];
+    }
+    if (type === "Home-Visit Groomer") {
+      return [
+        { active: "Payment successful", done: "Payment successful" },
+        { active: "Waiting for the groomer to confirm", done: "Booking confirmed" },
+        { active: "Groomer is on the way", done: "Groomer arrived" },
+        { active: "Your pet is being groomed", done: "Grooming complete" }
+      ];
+    }
+    if (type === "Pharmacy Order") {
+      return [
+        { active: "Payment successful", done: "Payment successful" },
+        { active: "Waiting for pharmacy to confirm", done: "Booking confirmed" },
+        { active: "Order is on the way", done: "Order delivered" },
+        { active: "Finalizing delivery", done: "Order complete" }
+      ];
+    }
+    return [
+      { active: "Payment successful", done: "Payment successful" },
+      { active: "Waiting for partner to confirm", done: "Booking confirmed" },
+      { active: "Preparing your pet's check-in", done: "Pet checked in" },
+      { active: "Your pet is staying comfortably", done: "Boarding complete" }
+    ];
+  }
+
+  function formatDateTime(iso) {
+    if (!iso) return "N/A";
+    try {
+      return new Date(iso).toLocaleString();
+    } catch (e) {
+      return iso;
+    }
+  }
+
+  function formatCountdown(ms) {
+    const totalSec = Math.max(0, Math.floor(ms / 1000));
+    const hrs = String(Math.floor(totalSec / 3600)).padStart(2, "0");
+    const mins = String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0");
+    const secs = String(totalSec % 60).padStart(2, "0");
+    return `${hrs}h ${mins}m ${secs}s`;
+  }
+
+  function updateCancelCountdown() {
+    if (!activeCancelBooking) return;
+    const scheduledMs = new Date(activeCancelBooking.scheduledAt).getTime();
+    const cutoffMs = scheduledMs - 2 * 3600 * 1000;
+    const remaining = cutoffMs - Date.now();
+    const banner = document.getElementById("cancel-countdown-banner");
+    const confirmBtn = document.getElementById("cancel-confirm-btn");
+
+    if (remaining > 0) {
+      banner.className = "notice-banner notice-amber mb-2";
+      banner.innerHTML = `<div><strong>Free cancellation closes in ${formatCountdown(remaining)}</strong> (2 hours before your scheduled appointment).</div>`;
+      confirmBtn.disabled = false;
+    } else {
+      banner.className = "notice-banner notice-orange mb-2";
+      banner.innerHTML = `<div><strong>Cancellation window closed:</strong> Appointments cannot be cancelled within 2 hours of the scheduled time.</div>`;
+      confirmBtn.disabled = true;
+    }
+  }
+
+  function openCancelModal(booking) {
+    activeCancelBooking = booking;
+    updateCancelCountdown();
+    clearInterval(countdownTimer);
+    countdownTimer = setInterval(updateCancelCountdown, 1000);
+    cancelModal.classList.add("open");
+  }
+
+  function closeCancelModal() {
+    clearInterval(countdownTimer);
+    cancelModal.classList.remove("open");
+  }
+
+  document.getElementById("cancel-modal-close").onclick = closeCancelModal;
+  document.getElementById("cancel-keep-btn").onclick = closeCancelModal;
+
+  document.getElementById("cancel-booking-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!activeCancelBooking) return;
+    const reason = document.getElementById("cancel-reason-select").value;
+    AnimedicState.cancelBooking(activeCancelBooking.id, reason);
+    closeCancelModal();
+    renderBookingsPage();
+    refundModal.classList.add("open");
+  });
+
+  document.getElementById("refund-ok-btn").onclick = () => refundModal.classList.remove("open");
+
+  function renderBookingsPage() {
+    const bookings = AnimedicState.getBookings();
+    const listEl = document.getElementById("bookings-list");
+
+    if (bookings.length === 0) {
+      listEl.innerHTML = `
+        <div class="card" style="text-align:center;padding:32px;">
+          <p style="color:var(--slate-600);margin-bottom:14px;">You have no bookings yet. Book a Home-Visit Vet, Groomer, or Pet Hotel to track your appointment here.</p>
+          <a href="home-visit.html" class="btn btn-primary">Explore Home-Visit Services</a>
+        </div>
+      `;
+    } else {
+      listEl.innerHTML = bookings.map(b => {
+        const isCancelled = b.status === "Cancelled";
+        const isDone = b.status === "Completed" || (b.activeStep && b.activeStep >= 5);
+        const activeStep = isDone ? 5 : (b.activeStep || 2);
+        const defs = getStepDefs(b.type);
+        const rate = b.commissionRate || 0.15;
+        const pctLabel = Math.round(rate * 100);
+        const platformCut = Math.round(b.totalAmount * rate);
+        const providerNet = b.totalAmount - platformCut;
+        const badgeClass = isCancelled ? "badge-red" : (isDone ? "badge-green" : "badge-orange");
+        const completionText = isCancelled ? "Cancelled" : (isDone ? formatDateTime(b.completedAt) : "In progress");
+
+        return `
+          <div class="card">
+            <div class="flex-between mb-2">
+              <div>
+                <span class="badge badge-navy">${b.type}</span>
+                <span style="font-size:0.78rem;color:var(--slate-500);margin-left:8px;">ID: ${b.id}</span>
+              </div>
+              <span class="badge ${badgeClass}">${b.status}</span>
+            </div>
+
+            <div class="flex-between">
+              <div>
+                <h3 style="font-size:1.05rem;">${b.providerName}</h3>
+                <div style="font-size:0.84rem;color:var(--slate-600);">${b.serviceName} | Pet: <strong>${b.petName}</strong></div>
+              </div>
+              <div class="price-tag">${AnimedicApp.formatIDR(b.totalAmount)}</div>
+            </div>
+
+            ${isCancelled ? `
+              <div style="margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--red-soft);color:var(--red-err);font-size:0.82rem;">
+                Cancelled (${b.cancelReason || "User requested"}). 100% of your payment has been refunded.
+              </div>
+            ` : `
+              <div class="progress-steps-4">
+                ${defs.map((d, idx) => {
+                  const stepNum = idx + 1;
+                  const stepDone = stepNum < activeStep;
+                  const stepActive = stepNum === activeStep;
+                  const cls = stepDone ? "done" : (stepActive ? "active" : "");
+                  const label = stepDone ? d.done : d.active;
+                  return `<div class="escrow-step ${cls}">${stepNum}. ${label}</div>`;
+                }).join("")}
+              </div>
+            `}
+
+            <div class="flex-between mt-2" style="flex-wrap:wrap;gap:10px;">
+              <div class="flex-row" style="gap:8px;">
+                <button type="button" class="btn btn-outline btn-sm toggle-details-btn" data-id="${b.id}">View Details</button>
+                ${!isCancelled && !isDone ? `<button type="button" class="btn btn-danger btn-sm open-cancel-btn" data-id="${b.id}">Cancel Booking</button>` : ""}
+              </div>
+              ${!isCancelled && !isDone ? `<button type="button" class="btn btn-primary btn-sm advance-step-btn" data-id="${b.id}">Next Step (Demo)</button>` : ""}
+            </div>
+
+            <div id="details-${b.id}" style="display:none;margin-top:12px;background:var(--bg-page);border:1px solid var(--slate-200);border-radius:10px;padding:12px;font-size:0.83rem;color:var(--navy-800);">
+              <div class="flex-between mb-1">
+                <span style="color:var(--slate-600);">Booking Date:</span>
+                <strong>${formatDateTime(b.createdAt)}</strong>
+              </div>
+              <div class="flex-between mb-1">
+                <span style="color:var(--slate-600);">Completion Date:</span>
+                <strong>${completionText}</strong>
+              </div>
+              ${b.paymentMethod ? `
+                <div class="flex-between mb-1">
+                  <span style="color:var(--slate-600);">Payment Method:</span>
+                  <strong>${b.paymentMethod}</strong>
+                </div>
+              ` : ""}
+              ${isDone ? `
+                <div style="border-top:1px solid var(--slate-200);margin-top:8px;padding-top:8px;color:#065F46;">
+                  <div class="flex-between">
+                    <span>Animedic Platform Fee (${pctLabel}%)</span>
+                    <strong>${AnimedicApp.formatIDR(platformCut)}</strong>
+                  </div>
+                  <div class="flex-between mt-1">
+                    <span>Provider Net Payout (${100 - pctLabel}%)</span>
+                    <strong>${AnimedicApp.formatIDR(providerNet)}</strong>
+                  </div>
+                </div>
+              ` : ""}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      listEl.querySelectorAll(".advance-step-btn").forEach(btn => {
+        btn.onclick = () => {
+          const updated = AnimedicState.advanceBookingStep(btn.dataset.id);
+          if (updated && updated.status === "Completed" && updated.type === "Home-Visit Vet") {
+            AnimedicApp.showToast("Visit completed, medical record added, and Rx Pharmacy unlocked.");
+          } else if (updated && updated.status === "Completed") {
+            AnimedicApp.showToast("Service completed.");
+          } else {
+            AnimedicApp.showToast("Booking status updated.");
+          }
+          renderBookingsPage();
+        };
+      });
+
+      listEl.querySelectorAll(".toggle-details-btn").forEach(btn => {
+        btn.onclick = () => {
+          const box = document.getElementById("details-" + btn.dataset.id);
+          const open = box.style.display === "block";
+          box.style.display = open ? "none" : "block";
+          btn.textContent = open ? "View Details" : "Hide Details";
+        };
+      });
+
+      listEl.querySelectorAll(".open-cancel-btn").forEach(btn => {
+        btn.onclick = () => {
+          const bk = bookings.find(x => x.id === btn.dataset.id);
+          if (bk) openCancelModal(bk);
+        };
+      });
+    }
+
+    // Medical Records
+    const records = AnimedicState.getMedicalRecords();
+    const recEl = document.getElementById("medical-records-list");
+    if (records.length === 0) {
+      recEl.innerHTML = `
+        <div class="card" style="color:var(--slate-500);font-size:0.88rem;">
+          No clinical visit records yet. Complete a Home-Visit Vet booking to automatically generate a timestamped medical record.
+        </div>
+      `;
+    } else {
+      recEl.innerHTML = records.map(r => `
+        <div class="card">
+          <div class="flex-between mb-1">
+            <strong>${r.petName} | ${r.service}</strong>
+            <span class="badge badge-green">Verified Clinical Note</span>
+          </div>
+          <div style="font-size:0.8rem;color:var(--slate-500);margin-bottom:8px;">Practitioner: ${r.providerName} | Recorded: ${new Date(r.date).toLocaleString()}</div>
+          <p style="font-size:0.86rem;color:var(--slate-700);">${r.notes}</p>
+        </div>
+      `).join("");
+    }
+  }
+
+  renderBookingsPage();
+}
+
+  </script>
+</body>
+</html>

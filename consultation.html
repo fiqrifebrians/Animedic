@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Consultation | Animedic</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="app-sidebar"></aside>
+    <div class="main-wrapper">
+      <header class="top-header" id="app-header"></header>
+      <main class="page-content">
+        
+<div class="section-header">
+  <div>
+    <h1 style="font-size:1.45rem;">24/7 Online Veterinary Consultation</h1>
+    <p class="section-sub">Connect with verified veterinarians for rapid preliminary guidance.</p>
+  </div>
+</div>
+
+<div class="notice-banner notice-amber mb-3">
+  <div>
+    <strong>Preliminary Guidance Disclaimer:</strong> Online consultation provides preliminary triage and first-aid guidance only. It does not constitute an official physical clinical diagnosis or authorize prescription medications without a physical examination.
+  </div>
+</div>
+
+<div class="filter-bar" style="margin-top:0;">
+  <select id="consult-pet-filter" class="form-select">
+    <option value="All">All Pet Types</option>
+    <option value="Cat">Cat</option>
+    <option value="Dog">Dog</option>
+    <option value="Rabbit">Rabbit</option>
+    <option value="Hamster">Hamster</option>
+    <option value="Bird">Bird</option>
+    <option value="Other">Other</option>
+  </select>
+  <select id="consult-specialty-filter" class="form-select">
+    <option value="All">All Specialties</option>
+    <option value="General Care">General Care</option>
+    <option value="Internal Medicine">Internal Medicine</option>
+    <option value="Dermatologist">Dermatologist</option>
+    <option value="Surgeon">Surgeon</option>
+    <option value="Neurologist">Neurologist</option>
+    <option value="Animal Behaviorist">Animal Behaviorist</option>
+  </select>
+</div>
+
+<div class="chat-layout">
+  <div class="card" style="height:fit-content;">
+    <div class="form-group">
+      <div class="flex-between">
+        <label class="form-label" style="margin-bottom:0;">Select Your Pets</label>
+        <label style="font-size:0.78rem;font-weight:600;color:var(--orange-primary);display:inline-flex;align-items:center;gap:5px;cursor:pointer;">
+          <input type="checkbox" id="consult-select-all" style="accent-color:var(--orange-primary);">
+          <span>Select All</span>
+        </label>
+      </div>
+      <div class="pet-check-list" id="consult-pet-checkboxes"></div>
+      <div class="form-error" id="consult-pet-err">Please keep at least 1 pet selected.</div>
+      <p style="font-size:0.74rem;color:var(--slate-500);margin-top:6px;">Flat per-session consultation fee regardless of number of pets selected.</p>
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">Available Veterinarians</label>
+      <div id="consult-vet-list" style="display:flex;flex-direction:column;gap:8px;max-height:360px;overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <div class="chat-box">
+    <div id="chat-header" style="padding:14px 18px;border-bottom:1px solid var(--slate-200);background:#FFFFFF;" class="flex-between">
+      <div>
+        <div id="active-vet-name" style="font-weight:700;font-size:0.96rem;">Select a veterinarian</div>
+        <div id="active-vet-meta" style="font-size:0.78rem;color:var(--slate-500);"></div>
+        <div id="active-pets-meta" style="font-size:0.74rem;color:var(--orange-primary);font-weight:600;margin-top:2px;"></div>
+      </div>
+      <span class="badge badge-green">Online Now</span>
+    </div>
+
+    <div class="chat-messages" id="chat-messages"></div>
+
+    <!-- Payment Gate Bar (Shown when locked) -->
+    <div id="chat-locked-bar" style="display:none;padding:16px;border-top:1px solid var(--slate-200);background:var(--orange-soft);text-align:center;">
+      <p style="font-size:0.84rem;color:var(--navy-800);margin-bottom:10px;">Complete a quick consultation payment to unlock live chat with this veterinarian.</p>
+      <button type="button" class="btn btn-primary" id="open-consult-pay-btn">Pay to Start Consultation</button>
+    </div>
+
+    <!-- Unlocked Chat Controls -->
+    <div id="chat-unlocked-controls">
+      <div class="chat-chips" id="chat-chips">
+        <button type="button" class="chip-btn" data-msg="My pet stopped eating since this morning.">My pet stopped eating</button>
+        <button type="button" class="chip-btn" data-msg="There is a skin rash and frequent itching.">Skin rash & itching</button>
+        <button type="button" class="chip-btn" data-msg="My pet has been vomiting twice today.">Vomiting twice today</button>
+        <button type="button" class="chip-btn" data-msg="What is the recommended vaccination schedule?">Vaccination schedule</button>
+      </div>
+
+      <div class="chat-pending-media" id="chat-pending-media">
+        <span id="pending-media-name">Attachment ready</span>
+        <button type="button" class="btn btn-outline btn-sm" id="clear-media-btn">Remove</button>
+      </div>
+
+      <form class="chat-input-row" id="chat-form">
+        <input type="file" id="chat-file-input" accept="image/*,video/*" style="display:none;">
+        <input type="file" id="chat-camera-fallback" accept="image/*" capture="environment" style="display:none;">
+        <button type="button" class="chat-attach-btn" id="chat-attach-btn" title="Attach photo or video">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+        <button type="button" class="chat-attach-btn" id="chat-camera-btn" title="Take a photo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+        </button>
+        <input type="text" id="chat-input" class="form-input" placeholder="Type your message here..." autocomplete="off">
+        <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Live Camera Capture Modal -->
+<div class="modal-backdrop" id="camera-capture-modal">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="camera-modal-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <span class="badge badge-orange mb-2">Camera</span>
+    <h2 style="font-size:1.25rem;margin-bottom:10px;">Capture Pet Photo</h2>
+    <div style="border-radius:12px;overflow:hidden;background:#0F172A;margin-bottom:16px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;">
+      <video id="camera-video-preview" autoplay playsinline style="width:100%;height:100%;object-fit:cover;"></video>
+    </div>
+    <div class="flex-between">
+      <button type="button" class="btn btn-outline" id="camera-cancel-btn">Cancel</button>
+      <button type="button" class="btn btn-primary" id="camera-snap-btn">Capture Photo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Consultation Payment Simulation Modal -->
+<div class="modal-backdrop" id="consult-pay-modal">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="consult-pay-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <span class="badge badge-orange mb-2">Consultation Payment</span>
+    <h2 style="font-size:1.3rem;margin-bottom:6px;">Start Online Consultation</h2>
+    <p id="pay-modal-desc" style="font-size:0.86rem;color:var(--slate-600);margin-bottom:16px;"></p>
+
+    <div class="form-group">
+      <label class="form-label" for="consult-pay-method">Payment Method</label>
+      <select id="consult-pay-method" class="form-select">
+        <option value="Debit / Credit Card">Debit / Credit Card</option>
+        <option value="QRIS">QRIS</option>
+        <option value="GoPay">GoPay</option>
+        <option value="OVO">OVO</option>
+        <option value="Bank Virtual Account">Bank Virtual Account</option>
+      </select>
+    </div>
+
+    <div style="background:var(--bg-page);border:1px solid var(--slate-200);border-radius:12px;padding:14px;margin-bottom:16px;" class="flex-between">
+      <strong>Total Payment (Flat Session)</strong>
+      <strong style="color:var(--orange-primary);font-size:1.08rem;" id="pay-modal-amount">Rp 0</strong>
+    </div>
+
+    <button type="button" class="btn btn-primary btn-block" id="confirm-consult-pay-btn">Confirm & Pay</button>
+  </div>
+</div>
+
+      </main>
+    </div>
+  </div>
+  <nav class="bottom-nav" id="app-bottom-nav"></nav>
+
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const currentUser = AnimedicApp.initShell("consultation");
+    
+if (currentUser) {
+  const petBoxEl = document.getElementById("consult-pet-checkboxes");
+  const selectAllEl = document.getElementById("consult-select-all");
+  const petErrEl = document.getElementById("consult-pet-err");
+  const petFilter = document.getElementById("consult-pet-filter");
+  const specFilter = document.getElementById("consult-specialty-filter");
+  const vetListEl = document.getElementById("consult-vet-list");
+  const messagesEl = document.getElementById("chat-messages");
+  const lockedBar = document.getElementById("chat-locked-bar");
+  const unlockedControls = document.getElementById("chat-unlocked-controls");
+  const payModal = document.getElementById("consult-pay-modal");
+  const fileInput = document.getElementById("chat-file-input");
+  const cameraFallback = document.getElementById("chat-camera-fallback");
+  const cameraModal = document.getElementById("camera-capture-modal");
+  const cameraVideo = document.getElementById("camera-video-preview");
+  const pendingMediaBar = document.getElementById("chat-pending-media");
+  const pendingMediaName = document.getElementById("pending-media-name");
+
+  const pets = currentUser.pets || [];
+  let selectedVet = ANIMEDIC_DATA.vets[0];
+  let questionCounts = {};
+  let pendingMedia = null; // { type: 'file'|'dataUrl', file?, dataUrl?, name }
+  let activeStream = null;
+
+  const LIMIT_REPLY = "Thank you for sharing these details. Please monitor hydration and energy levels closely. For an accurate physical diagnosis, I recommend scheduling a stress-free home-visit examination.";
+
+  function renderPetCheckboxes() {
+    petBoxEl.innerHTML = pets.map((p, idx) => `
+      <label class="pet-check-item" style="padding:8px 10px;">
+        <div class="flex-row" style="gap:8px;">
+          <input type="checkbox" value="${p.id}" ${idx === 0 ? "checked" : ""}>
+          <strong style="font-size:0.86rem;">${p.name}</strong>
+          <span style="font-size:0.75rem;color:var(--slate-500);">${p.type}</span>
+        </div>
+      </label>
+    `).join("");
+
+    petBoxEl.querySelectorAll("input[type='checkbox']").forEach(cb => {
+      cb.onchange = () => {
+        const checked = petBoxEl.querySelectorAll("input[type='checkbox']:checked");
+        if (checked.length === 0) {
+          cb.checked = true;
+          petErrEl.style.display = "block";
+          return;
+        }
+        petErrEl.style.display = "none";
+        syncSelectAllState();
+        updateHeaderPets();
+      };
+    });
+    syncSelectAllState();
+  }
+
+  function syncSelectAllState() {
+    const all = petBoxEl.querySelectorAll("input[type='checkbox']");
+    const checked = petBoxEl.querySelectorAll("input[type='checkbox']:checked");
+    selectAllEl.checked = all.length > 0 && checked.length === all.length;
+  }
+
+  selectAllEl.onchange = () => {
+    const all = petBoxEl.querySelectorAll("input[type='checkbox']");
+    if (selectAllEl.checked) {
+      all.forEach(cb => { cb.checked = true; });
+    } else {
+      all.forEach((cb, i) => { cb.checked = i === 0; });
+    }
+    petErrEl.style.display = "none";
+    updateHeaderPets();
+  };
+
+  function getSelectedPets() {
+    const ids = Array.from(petBoxEl.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
+    const matched = pets.filter(p => ids.includes(p.id));
+    return matched.length > 0 ? matched : [{ name: "your pet", type: "pet" }];
+  }
+
+  function formatPetNames(list) {
+    const names = list.map(p => p.name);
+    if (names.length === 1) return names[0];
+    if (names.length === 2) return `${names[0]} and ${names[1]}`;
+    return `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
+  }
+
+  function updateHeaderPets() {
+    const list = getSelectedPets();
+    document.getElementById("active-pets-meta").textContent = "Consulting for: " + formatPetNames(list);
+  }
+
+  function renderVetList() {
+    const pType = petFilter.value;
+    const spec = specFilter.value;
+    const hasPlan = AnimedicState.isMonthlyPlanActive();
+
+    let list = [...ANIMEDIC_DATA.vets];
+    if (pType !== "All") list = list.filter(v => v.supportedPets.includes(pType));
+    if (spec !== "All") list = list.filter(v => v.specialty === spec);
+
+    if (list.length === 0) {
+      vetListEl.innerHTML = '<div style="font-size:0.84rem;color:var(--slate-500);padding:12px;">No veterinarians match these filters.</div>';
+      return;
+    }
+
+    if (!list.some(v => v.id === selectedVet.id)) {
+      selectedVet = list[0];
+      initChatSession();
+    }
+
+    vetListEl.innerHTML = list.map(v => `
+      <button type="button" class="card" data-vet="${v.id}" style="text-align:left;padding:12px;cursor:pointer;border-color:${v.id === selectedVet.id ? "var(--orange-primary)" : "var(--slate-200)"};background:${v.id === selectedVet.id ? "var(--orange-soft)" : "#FFFFFF"};">
+        <div class="flex-between">
+          <div class="flex-row" style="gap:6px;">
+            <strong style="font-size:0.88rem;">${v.name}</strong>
+            <span title="Verified Veterinarian" style="color:var(--green-ok);display:inline-flex;align-items:center;">${AnimedicApp.ICONS.shield}</span>
+          </div>
+          <span style="font-size:0.78rem;font-weight:700;color:var(--navy-800);">${AnimedicApp.ICONS.star} ${v.rating.toFixed(1)}</span>
+        </div>
+        <div class="flex-between mt-1">
+          <span style="font-size:0.76rem;color:var(--slate-600);">${v.specialty}</span>
+          <span style="font-size:0.78rem;font-weight:700;color:${hasPlan ? "var(--green-ok)" : "var(--orange-primary)"};">
+            ${hasPlan ? "Free with Pet Plan" : AnimedicApp.formatIDR(v.consultPrice)}
+          </span>
+        </div>
+      </button>
+    `).join("");
+
+    vetListEl.querySelectorAll("button").forEach(btn => {
+      btn.onclick = () => {
+        selectedVet = ANIMEDIC_DATA.vets.find(v => v.id === btn.dataset.vet);
+        renderVetList();
+        initChatSession();
+      };
+    });
+  }
+
+  function updateChatLockState() {
+    const unlocked = AnimedicState.isConsultVetUnlocked(selectedVet.id);
+    if (unlocked) {
+      lockedBar.style.display = "none";
+      unlockedControls.style.display = "block";
+    } else {
+      lockedBar.style.display = "block";
+      unlockedControls.style.display = "none";
+      document.getElementById("open-consult-pay-btn").textContent = `Pay ${AnimedicApp.formatIDR(selectedVet.consultPrice)} to Start Consultation`;
+    }
+  }
+
+  function appendMessage(sender, html) {
+    const div = document.createElement("div");
+    div.className = "msg-bubble " + (sender === "user" ? "msg-user" : "msg-vet");
+    div.innerHTML = html;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function initChatSession() {
+    const hasPlan = AnimedicState.isMonthlyPlanActive();
+    document.getElementById("active-vet-name").textContent = selectedVet.name;
+    document.getElementById("active-vet-meta").textContent = `${selectedVet.specialty} | Rating ${selectedVet.rating.toFixed(1)} | ${hasPlan ? "Covered by Monthly Pet Plan" : AnimedicApp.formatIDR(selectedVet.consultPrice)}`;
+    updateHeaderPets();
+    const petNames = formatPetNames(getSelectedPets());
+    messagesEl.innerHTML = "";
+    appendMessage("vet", `Hello ${currentUser.fullName.split(" ")[0]}. I am ${selectedVet.name} (${selectedVet.specialty}). How can I help with <strong>${petNames}</strong> today?`);
+    updateChatLockState();
+  }
+
+  function generateSmartReply(text, hasMedia) {
+    const petNames = formatPetNames(getSelectedPets());
+    const lower = (text || "").toLowerCase();
+    const mediaNote = hasMedia ? `Thank you for sharing the photo/video of ${petNames}. I have reviewed it carefully. ` : "";
+
+    if (lower.includes("vomit") || lower.includes("throw up")) {
+      return mediaNote + `Frequent vomiting in ${petNames} can signal dietary indiscretion or gastritis. Pause solid food for 4 to 6 hours while keeping fresh water available in small sips. If vomiting continues or blood appears, book a home-visit examination right away.`;
+    }
+    if (lower.includes("diarrhea") || lower.includes("loose stool") || lower.includes("poop")) {
+      return mediaNote + `Diarrhea can quickly dehydrate ${petNames}. Offer fresh water and a bland, easily digestible diet. A probiotic paste from our pharmacy can support gut recovery, and a home-visit vet should evaluate ${petNames} if it lasts over 24 hours.`;
+    }
+    if (lower.includes("eat") || lower.includes("appetite") || lower.includes("food")) {
+      return mediaNote + `Reduced appetite in ${petNames} often relates to mild digestive upset, dental sensitivity, or stress. Try offering a small portion of warm wet food and monitor water intake. If more than two meals are skipped, schedule a home-visit check-up.`;
+    }
+    if (lower.includes("rash") || lower.includes("itch") || lower.includes("skin") || lower.includes("flea") || lower.includes("scratch")) {
+      return mediaNote + `Skin irritation or itching in ${petNames} commonly stems from fleas, allergies, or fungal spots. Avoid applying human ointments and keep the area clean. You can browse OTC flea care in our pharmacy or book a home-visit dermatology check.`;
+    }
+    if (lower.includes("ear") || lower.includes("head shak")) {
+      return mediaNote + `Ear scratching or head shaking can indicate ear mites or a mild ear infection. Avoid inserting cotton swabs deep into the ear canal. A gentle veterinary ear cleanser helps with routine wax, while persistent odor needs a home-visit check.`;
+    }
+    if (lower.includes("limp") || lower.includes("leg") || lower.includes("paw") || lower.includes("walk")) {
+      return mediaNote + `Limping suggests a sprain, paw pad injury, or joint discomfort. Keep ${petNames} resting in a quiet area and inspect the paw pads gently for thorns or swelling. If weight cannot be borne, book a home-visit vet exam.`;
+    }
+    if (lower.includes("cough") || lower.includes("sneez") || lower.includes("breath")) {
+      return mediaNote + `Respiratory signs like coughing or sneezing in ${petNames} should be monitored closely. Keep the room well-ventilated and dust-free. If breathing looks labored or noisy, schedule an urgent home-visit examination.`;
+    }
+    if (lower.includes("eye") || lower.includes("tear") || lower.includes("discharge")) {
+      return mediaNote + `Eye discharge or squinting in ${petNames} may be caused by dust irritation or conjunctivitis. Gently wipe the outer corner with clean damp gauze and avoid human eye drops. Book a home-visit exam if redness worsens.`;
+    }
+    if (lower.includes("fever") || lower.includes("hot") || lower.includes("letharg") || lower.includes("tired") || lower.includes("weak")) {
+      return mediaNote + `Lethargy or warmth can indicate an underlying infection or fever. Keep ${petNames} comfortable, hydrated, and resting. Because fever requires a physical temperature check, I recommend booking a home-visit veterinarian today.`;
+    }
+    if (lower.includes("vaccin")) {
+      return mediaNote + `Core annual vaccinations keep ${petNames} protected against common urban infections. Our veterinarians can administer vaccines comfortably at home to avoid clinic travel stress.`;
+    }
+    if (lower.includes("wound") || lower.includes("bleed") || lower.includes("injur")) {
+      return mediaNote + `For minor surface wounds on ${petNames}, apply gentle pressure with clean gauze and prevent licking. Deep or persistent bleeding requires a prompt physical home-visit assessment.`;
+    }
+    return mediaNote + `I have noted your update regarding ${petNames}. Keep ${petNames} calm, hydrated, and comfortable while watching for any changes in appetite or energy. Feel free to share how long this has been happening or book a home-visit vet for a full physical check.`;
+  }
+
+  function handleSend(text, media) {
+    if (!AnimedicState.isConsultVetUnlocked(selectedVet.id)) return;
+
+    let userHtml = "";
+    if (text) userHtml += `<div>${text}</div>`;
+    if (media) {
+      if (media.type === "dataUrl") {
+        userHtml += `<img src="${media.dataUrl}" alt="Captured pet photo" class="chat-media-thumb">`;
+      } else if (media.file) {
+        const url = URL.createObjectURL(media.file);
+        if (media.file.type.startsWith("video/")) {
+          userHtml += `<video src="${url}" controls class="chat-media-thumb"></video>`;
+        } else {
+          userHtml += `<img src="${url}" alt="Uploaded pet media" class="chat-media-thumb">`;
+        }
+      }
+    }
+    appendMessage("user", userHtml);
+
+    const count = (questionCounts[selectedVet.id] || 0) + 1;
+    questionCounts[selectedVet.id] = count;
+
+    const typing = document.createElement("div");
+    typing.className = "msg-bubble msg-vet";
+    typing.textContent = selectedVet.name + " is typing...";
+    messagesEl.appendChild(typing);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+
+    setTimeout(() => {
+      typing.remove();
+      const replyText = count >= 5 ? LIMIT_REPLY : generateSmartReply(text, Boolean(media));
+      appendMessage("vet", `
+        <div>${replyText}</div>
+        <div class="flex-row mt-2" style="gap:8px;">
+          <a href="home-visit.html?tab=vets" class="btn btn-primary btn-sm">Book Home-Visit Vet</a>
+          <a href="pharmacy.html" class="btn btn-outline btn-sm">Browse Pharmacy</a>
+        </div>
+      `);
+    }, 650);
+  }
+
+  // Attach File
+  document.getElementById("chat-attach-btn").onclick = () => fileInput.click();
+  fileInput.onchange = () => {
+    if (fileInput.files && fileInput.files[0]) {
+      pendingMedia = { type: "file", file: fileInput.files[0], name: fileInput.files[0].name };
+      pendingMediaName.textContent = "Attached: " + pendingMedia.name;
+      pendingMediaBar.classList.add("show");
+    }
+  };
+
+  // Camera Capture (Webcam Modal with Graceful File Fallback)
+  function stopCameraStream() {
+    if (activeStream) {
+      activeStream.getTracks().forEach(t => t.stop());
+      activeStream = null;
+    }
+    cameraVideo.srcObject = null;
+  }
+
+  document.getElementById("chat-camera-btn").onclick = async () => {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        activeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        cameraVideo.srcObject = activeStream;
+        cameraModal.classList.add("open");
+        return;
+      } catch (err) {
+        // Fallback to native camera file input if permission denied or no webcam
+      }
+    }
+    cameraFallback.click();
+  };
+
+  cameraFallback.onchange = () => {
+    if (cameraFallback.files && cameraFallback.files[0]) {
+      pendingMedia = { type: "file", file: cameraFallback.files[0], name: cameraFallback.files[0].name };
+      pendingMediaName.textContent = "Photo captured: " + pendingMedia.name;
+      pendingMediaBar.classList.add("show");
+    }
+  };
+
+  document.getElementById("camera-modal-close").onclick = () => { stopCameraStream(); cameraModal.classList.remove("open"); };
+  document.getElementById("camera-cancel-btn").onclick = () => { stopCameraStream(); cameraModal.classList.remove("open"); };
+  document.getElementById("camera-snap-btn").onclick = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = cameraVideo.videoWidth || 640;
+    canvas.height = cameraVideo.videoHeight || 480;
+    canvas.getContext("2d").drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+    stopCameraStream();
+    cameraModal.classList.remove("open");
+    pendingMedia = { type: "dataUrl", dataUrl, name: "Captured photo" };
+    pendingMediaName.textContent = "Captured photo ready to send";
+    pendingMediaBar.classList.add("show");
+  };
+
+  document.getElementById("clear-media-btn").onclick = () => {
+    pendingMedia = null;
+    fileInput.value = "";
+    cameraFallback.value = "";
+    pendingMediaBar.classList.remove("show");
+  };
+
+  document.getElementById("chat-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = document.getElementById("chat-input");
+    const val = input.value.trim();
+    if (!val && !pendingMedia) return;
+    const mediaToSend = pendingMedia;
+    input.value = "";
+    pendingMedia = null;
+    fileInput.value = "";
+    cameraFallback.value = "";
+    pendingMediaBar.classList.remove("show");
+    handleSend(val, mediaToSend);
+  });
+
+  document.querySelectorAll(".chip-btn").forEach(chip => {
+    chip.onclick = () => handleSend(chip.dataset.msg, null);
+  });
+
+  document.getElementById("open-consult-pay-btn").onclick = () => {
+    document.getElementById("pay-modal-desc").textContent = `Unlock 24/7 online consultation with ${selectedVet.name} (${selectedVet.specialty}). Flat session fee covers all selected pets.`;
+    document.getElementById("pay-modal-amount").textContent = AnimedicApp.formatIDR(selectedVet.consultPrice);
+    payModal.classList.add("open");
+  };
+  document.getElementById("consult-pay-close").onclick = () => payModal.classList.remove("open");
+  document.getElementById("confirm-consult-pay-btn").onclick = () => {
+    AnimedicState.unlockConsultVet(selectedVet.id);
+    payModal.classList.remove("open");
+    updateChatLockState();
+    AnimedicApp.showToast("Payment successful. Consultation chat unlocked.");
+  };
+
+  petFilter.onchange = renderVetList;
+  specFilter.onchange = renderVetList;
+
+  renderPetCheckboxes();
+  renderVetList();
+  initChatSession();
+}
+
+  </script>
+</body>
+</html>

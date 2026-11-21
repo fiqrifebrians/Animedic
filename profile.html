@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile & Pet Plan | Animedic</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="app-sidebar"></aside>
+    <div class="main-wrapper">
+      <header class="top-header" id="app-header"></header>
+      <main class="page-content">
+        
+<div class="section-header">
+  <div>
+    <h1 style="font-size:1.45rem;">Account & Pet Profiles</h1>
+    <p class="section-sub">Manage your account, household pets, and Monthly Pet Plan.</p>
+  </div>
+  <button type="button" class="btn btn-outline" id="signout-btn" style="color:var(--red-err);border-color:#FECACA;">Sign Out</button>
+</div>
+
+<div class="grid-2 mb-3">
+  <div class="card">
+    <div class="flex-between mb-2">
+      <h2 class="section-title">Owner Details</h2>
+      <button type="button" class="btn btn-outline btn-sm" id="manage-account-open-btn">Manage Account</button>
+    </div>
+    <div class="flex-row" style="align-items:center;gap:14px;">
+      <div class="profile-avatar-lg" id="prof-avatar-preview"></div>
+      <div style="font-size:0.88rem;display:flex;flex-direction:column;gap:4px;min-width:0;">
+        <div><strong>Name:</strong> <span id="prof-name"></span></div>
+        <div><strong>Email:</strong> <span id="prof-email"></span></div>
+        <div><strong>Location:</strong> Rawamangun, East Jakarta, Indonesia</div>
+        <div><strong>Active Plan:</strong> <span class="badge badge-orange" id="prof-plan"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="flex-between mb-2">
+      <h2 class="section-title">Manage Pets</h2>
+      <button type="button" class="btn btn-primary btn-sm" id="add-pet-open-btn">Add Pet</button>
+    </div>
+    <div id="prof-pets-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+  </div>
+</div>
+
+<section class="mb-3">
+  <h2 class="section-title mb-2">Animedic Pet Plan Comparison</h2>
+  <div class="grid-2">
+    <div class="card" id="plan-payg">
+      <span class="badge badge-navy mb-2">Flexible</span>
+      <h3 style="font-size:1.15rem;">Pay-Per-Visit</h3>
+      <div class="price-tag mt-1 mb-2">Rp 0 <span style="font-size:0.8rem;font-weight:500;color:var(--slate-500);">/ month</span></div>
+      <p style="font-size:0.84rem;color:var(--slate-600);margin-bottom:14px;">Pay only when you book a consultation, home-visit vet, groomer, or boarding stay.</p>
+      <div id="payg-status-area"></div>
+    </div>
+
+    <div class="card" id="plan-monthly" style="border-color:var(--orange-primary);background:var(--orange-soft);">
+      <span class="badge badge-orange mb-2">Love Your Pets</span>
+      <h3 style="font-size:1.15rem;">Monthly Pet Plan</h3>
+      <div class="price-tag mt-1 mb-2">Rp 229.000 <span style="font-size:0.8rem;font-weight:500;color:var(--slate-500);">/ month</span></div>
+      <ul class="plan-benefits-list">
+        <li>Unlimited 24/7 online consultation</li>
+        <li>15% off home-visit travel fees</li>
+        <li>15% off delivery fees</li>
+        <li>Cancel anytime</li>
+      </ul>
+      <div id="monthly-plan-cta-area"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Manage Account Modal -->
+<div class="modal-backdrop" id="manage-account-modal">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="acct-modal-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <h2 style="font-size:1.28rem;margin-bottom:14px;">Manage Account</h2>
+    <form id="manage-account-form" novalidate>
+      <div class="form-group">
+        <label class="form-label">Profile Photo</label>
+        <div class="flex-row" style="gap:12px;">
+          <div class="profile-avatar-lg" id="acct-photo-preview" style="width:54px;height:54px;font-size:1.05rem;"></div>
+          <input type="file" id="acct-photo-input" accept="image/*" style="display:none;">
+          <button type="button" class="btn btn-outline btn-sm" id="acct-photo-upload-btn">Upload Photo</button>
+          <button type="button" class="btn btn-danger-outline btn-sm" id="acct-photo-remove-btn">Remove</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="acct-name">Name</label>
+        <input type="text" id="acct-name" class="form-input" placeholder="Enter your name" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="acct-email">Email</label>
+        <input type="email" id="acct-email" class="form-input" placeholder="Enter your email address" required>
+      </div>
+
+      <div style="border-top:1px solid var(--slate-200);margin:14px 0;padding-top:14px;">
+        <button type="button" class="btn btn-outline btn-sm" id="toggle-pw-section-btn">Change Password</button>
+        <div id="pw-change-section" class="fade-view" style="display:none;opacity:0;margin-top:14px;">
+          <div class="form-group">
+            <label class="form-label" for="acct-curr-pass">Current Password</label>
+            <input type="password" id="acct-curr-pass" class="form-input" placeholder="Enter current password">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="acct-new-pass">New Password</label>
+            <input type="password" id="acct-new-pass" class="form-input" placeholder="Enter new password">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="acct-confirm-pass">Confirm New Password</label>
+            <input type="password" id="acct-confirm-pass" class="form-input" placeholder="Re-enter new password">
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" id="cancel-pw-section-btn">Cancel Password Change</button>
+        </div>
+      </div>
+
+      <ul class="validation-list mb-2" id="acct-validation-list"></ul>
+      <button type="submit" class="btn btn-primary btn-block">Save Account Changes</button>
+    </form>
+  </div>
+</div>
+
+<!-- Add / Edit Pet Modal -->
+<div class="modal-backdrop" id="pet-editor-modal">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="pet-editor-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <h2 id="pet-editor-title" style="font-size:1.25rem;margin-bottom:14px;">Add a New Pet</h2>
+    <form id="pet-editor-form">
+      <div class="form-group">
+        <label class="form-label">Pet Photo (Optional)</label>
+        <div class="flex-row" style="gap:10px;">
+          <div class="pet-avatar-circle" id="pet-photo-preview" style="width:52px;height:52px;background:var(--slate-100);color:var(--slate-500);"></div>
+          <input type="file" id="pet-photo-input" accept="image/*" style="display:none;">
+          <button type="button" class="btn btn-outline btn-sm" id="pet-photo-upload-btn">Upload Photo</button>
+          <button type="button" class="btn btn-danger-outline btn-sm" id="pet-photo-remove-btn">Remove</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="edit-pet-name">Pet Name</label>
+        <input type="text" id="edit-pet-name" class="form-input" required placeholder="Enter your pet's name">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="edit-pet-type">Pet Type</label>
+        <select id="edit-pet-type" class="form-select">
+          <option value="Cat">Cat</option>
+          <option value="Dog">Dog</option>
+          <option value="Rabbit">Rabbit</option>
+          <option value="Hamster">Hamster</option>
+          <option value="Bird">Bird</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="edit-pet-gender">Gender</label>
+        <select id="edit-pet-gender" class="form-select">
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Save Pet Profile</button>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Pet Warning Modal -->
+<div class="modal-backdrop" id="delete-pet-modal">
+  <div class="modal-box">
+    <span class="badge badge-red mb-2">Confirm Removal</span>
+    <h2 style="font-size:1.25rem;margin-bottom:8px;">Delete Pet Profile?</h2>
+    <p id="delete-pet-warning-text" style="font-size:0.88rem;color:var(--slate-600);margin-bottom:20px;"></p>
+    <div class="flex-between">
+      <button type="button" class="btn btn-outline" id="delete-pet-cancel-btn">Cancel</button>
+      <button type="button" class="btn btn-danger" id="delete-pet-confirm-btn">Delete Pet</button>
+    </div>
+  </div>
+</div>
+
+<!-- Subscribe Confirmation Modal -->
+<div class="modal-backdrop" id="subscribe-plan-modal">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="sub-modal-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <span class="badge badge-orange mb-2">Plan Activation</span>
+    <h2 style="font-size:1.3rem;margin-bottom:6px;">Confirm Monthly Pet Plan</h2>
+    <p style="font-size:0.86rem;color:var(--slate-600);margin-bottom:14px;">Activate instant app-wide benefits across consultations, home visits, and pharmacy deliveries.</p>
+    <div style="background:var(--bg-page);border:1px solid var(--slate-200);border-radius:12px;padding:14px;margin-bottom:16px;" class="flex-between">
+      <strong>Monthly Pet Plan</strong>
+      <strong style="color:var(--orange-primary);">Rp 229.000 / month</strong>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="plan-pay-method">Payment Method</label>
+      <select id="plan-pay-method" class="form-select">
+        <option value="Debit / Credit Card">Debit / Credit Card</option>
+        <option value="QRIS">QRIS</option>
+        <option value="GoPay">GoPay</option>
+        <option value="OVO">OVO</option>
+        <option value="Bank Virtual Account">Bank Virtual Account</option>
+      </select>
+    </div>
+    <button type="button" class="btn btn-primary btn-block" id="confirm-activate-plan-btn">Confirm & Pay</button>
+  </div>
+</div>
+
+<!-- Cancel Plan Confirmation Modal -->
+<div class="modal-backdrop" id="cancel-plan-modal">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="cancel-plan-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <span class="badge badge-red mb-2">Cancel Subscription</span>
+    <h2 style="font-size:1.28rem;margin-bottom:8px;">Cancel Monthly Pet Plan?</h2>
+    <p style="font-size:0.88rem;color:var(--slate-600);margin-bottom:20px;">
+      Your account will revert to Pay-Per-Visit and you will lose unlimited free online consultations and 15% travel and delivery fee discounts.
+    </p>
+    <div class="flex-between">
+      <button type="button" class="btn btn-outline" id="keep-plan-btn">Keep Plan</button>
+      <button type="button" class="btn btn-danger" id="confirm-cancel-plan-btn">Confirm Cancellation</button>
+    </div>
+  </div>
+</div>
+
+      </main>
+    </div>
+  </div>
+  <nav class="bottom-nav" id="app-bottom-nav"></nav>
+
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const currentUser = AnimedicApp.initShell("profile");
+    
+if (currentUser) {
+  const subModal = document.getElementById("subscribe-plan-modal");
+  const cancelPlanModal = document.getElementById("cancel-plan-modal");
+  const acctModal = document.getElementById("manage-account-modal");
+  const petModal = document.getElementById("pet-editor-modal");
+  const deletePetModal = document.getElementById("delete-pet-modal");
+
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  let draftAcctPhoto = "";
+  let editingPetId = null;
+  let draftPetPhoto = "";
+  let deletingPetId = null;
+
+  function getInitials(name) {
+    return (name || "U").split(" ").map(s => s[0]).join("").substring(0, 2).toUpperCase();
+  }
+
+  function refreshHeaderAvatar(user) {
+    const el = document.getElementById("header-avatar-btn");
+    if (!el) return;
+    el.innerHTML = user.photo ? `<img src="${user.photo}" alt="${user.fullName}">` : getInitials(user.fullName);
+  }
+
+  function renderProfile() {
+    const user = AnimedicState.getCurrentUser();
+    const isMonthly = user.plan === "Monthly Pet Plan";
+    document.getElementById("prof-name").textContent = user.fullName;
+    document.getElementById("prof-email").textContent = user.email;
+    document.getElementById("prof-plan").textContent = user.plan || "Pay-Per-Visit";
+
+    const avatarEl = document.getElementById("prof-avatar-preview");
+    avatarEl.innerHTML = user.photo ? `<img src="${user.photo}" alt="${user.fullName}">` : getInitials(user.fullName);
+    refreshHeaderAvatar(user);
+
+    const petsEl = document.getElementById("prof-pets-list");
+    const pets = user.pets || [];
+    if (pets.length === 0) {
+      petsEl.innerHTML = '<div style="font-size:0.84rem;color:var(--slate-500);">No pets registered yet. Click Add Pet to create a profile.</div>';
+    } else {
+      petsEl.innerHTML = pets.map(p => `
+        <div class="flex-between" style="padding:10px 12px;border:1px solid var(--slate-200);border-radius:10px;">
+          <div class="flex-row" style="gap:10px;">
+            <div class="pet-avatar-circle" style="width:38px;height:38px;background:${p.gender === "Male" ? "var(--blue-soft)" : "var(--pink-soft)"};color:${p.gender === "Male" ? "var(--blue-male)" : "var(--pink-female)"};">
+              ${p.photo ? `<img src="${p.photo}" alt="${p.name}">` : AnimedicApp.ICONS.paw}
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:0.9rem;">${p.name}</div>
+              <div class="flex-row" style="gap:6px;margin-top:2px;">
+                <span style="font-size:0.76rem;color:var(--slate-500);">${p.type}</span>
+                ${AnimedicApp.renderGenderBadge(p.gender)}
+              </div>
+            </div>
+          </div>
+          <div class="flex-row" style="gap:6px;">
+            <button type="button" class="btn btn-outline btn-sm edit-pet-btn" data-id="${p.id}">Edit</button>
+            <button type="button" class="btn btn-danger-outline btn-sm del-pet-btn" data-id="${p.id}">Delete</button>
+          </div>
+        </div>
+      `).join("");
+
+      petsEl.querySelectorAll(".edit-pet-btn").forEach(btn => {
+        btn.onclick = () => openPetEditor(pets.find(x => x.id === btn.dataset.id));
+      });
+      petsEl.querySelectorAll(".del-pet-btn").forEach(btn => {
+        btn.onclick = () => {
+          const target = pets.find(x => x.id === btn.dataset.id);
+          if (!target) return;
+          deletingPetId = target.id;
+          document.getElementById("delete-pet-warning-text").textContent = `Are you sure you want to remove ${target.name}? This action cannot be undone.`;
+          deletePetModal.classList.add("open");
+        };
+      });
+    }
+
+    document.getElementById("payg-status-area").innerHTML = !isMonthly
+      ? '<span class="badge badge-green">Current Active Plan</span>'
+      : '<span style="font-size:0.82rem;color:var(--slate-500);">Available anytime if you cancel Monthly Pet Plan.</span>';
+
+    const ctaArea = document.getElementById("monthly-plan-cta-area");
+    if (isMonthly) {
+      ctaArea.innerHTML = `
+        <div class="flex-between" style="gap:10px;">
+          <span class="badge badge-green">Active Plan</span>
+          <button type="button" class="btn btn-danger-outline btn-sm" id="open-cancel-plan-btn">Cancel Plan</button>
+        </div>
+      `;
+      document.getElementById("open-cancel-plan-btn").onclick = () => cancelPlanModal.classList.add("open");
+    } else {
+      ctaArea.innerHTML = `<button type="button" class="btn btn-primary btn-block" id="open-sub-plan-btn">Switch to Monthly Plan</button>`;
+      document.getElementById("open-sub-plan-btn").onclick = () => subModal.classList.add("open");
+    }
+  }
+
+  // --- Manage Account ---
+  function renderAcctPhotoPreview(user) {
+    const el = document.getElementById("acct-photo-preview");
+    el.innerHTML = draftAcctPhoto ? `<img src="${draftAcctPhoto}" alt="Profile">` : getInitials(user.fullName);
+  }
+
+  let pwSectionOpen = false;
+  const pwSection = document.getElementById("pw-change-section");
+  const togglePwBtn = document.getElementById("toggle-pw-section-btn");
+  togglePwBtn.onclick = () => {
+    pwSectionOpen = true;
+    togglePwBtn.style.display = "none";
+    pwSection.style.display = "block";
+    requestAnimationFrame(() => { pwSection.style.opacity = "1"; });
+  };
+  document.getElementById("cancel-pw-section-btn").onclick = () => {
+    pwSectionOpen = false;
+    pwSection.style.opacity = "0";
+    setTimeout(() => {
+      pwSection.style.display = "none";
+      togglePwBtn.style.display = "inline-flex";
+      document.getElementById("acct-curr-pass").value = "";
+      document.getElementById("acct-new-pass").value = "";
+      document.getElementById("acct-confirm-pass").value = "";
+    }, 200);
+  };
+
+  document.getElementById("manage-account-open-btn").onclick = () => {
+    const user = AnimedicState.getCurrentUser();
+    draftAcctPhoto = user.photo || "";
+    document.getElementById("acct-name").value = user.fullName;
+    document.getElementById("acct-email").value = user.email;
+    document.getElementById("acct-curr-pass").value = "";
+    document.getElementById("acct-new-pass").value = "";
+    document.getElementById("acct-confirm-pass").value = "";
+    pwSectionOpen = false;
+    pwSection.style.display = "none";
+    pwSection.style.opacity = "0";
+    togglePwBtn.style.display = "inline-flex";
+    document.getElementById("acct-validation-list").style.display = "none";
+    renderAcctPhotoPreview(user);
+    acctModal.classList.add("open");
+  };
+  document.getElementById("acct-modal-close").onclick = () => acctModal.classList.remove("open");
+
+  const acctPhotoInput = document.getElementById("acct-photo-input");
+  document.getElementById("acct-photo-upload-btn").onclick = () => acctPhotoInput.click();
+  acctPhotoInput.onchange = async () => {
+    if (acctPhotoInput.files && acctPhotoInput.files[0]) {
+      draftAcctPhoto = await AnimedicApp.compressImage(acctPhotoInput.files[0], 256);
+      renderAcctPhotoPreview(AnimedicState.getCurrentUser());
+    }
+  };
+  document.getElementById("acct-photo-remove-btn").onclick = () => {
+    draftAcctPhoto = "";
+    acctPhotoInput.value = "";
+    renderAcctPhotoPreview(AnimedicState.getCurrentUser());
+  };
+
+  document.getElementById("manage-account-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const user = AnimedicState.getCurrentUser();
+    const name = document.getElementById("acct-name").value.trim();
+    const email = document.getElementById("acct-email").value.trim();
+    const currPass = document.getElementById("acct-curr-pass").value;
+    const newPass = document.getElementById("acct-new-pass").value;
+    const confirmPass = document.getElementById("acct-confirm-pass").value;
+    const listEl = document.getElementById("acct-validation-list");
+
+    const errors = [];
+    if (!name) errors.push("Name is required.");
+    if (!EMAIL_REGEX.test(email)) errors.push("Enter a valid email format (name@domain.com).");
+
+    if (pwSectionOpen) {
+      if (currPass !== user.password) errors.push("Current password is incorrect.");
+      if (newPass.length < 8) errors.push("New password must be at least 8 characters.");
+      if (!/[a-z]/.test(newPass)) errors.push("New password must include at least 1 lowercase letter.");
+      if (!/[A-Z]/.test(newPass)) errors.push("New password must include at least 1 uppercase letter.");
+      if (!/[0-9]/.test(newPass)) errors.push("New password must include at least 1 number.");
+      if (newPass !== confirmPass) errors.push("New passwords must match.");
+    }
+
+    if (errors.length > 0) {
+      listEl.innerHTML = errors.map(err => `<li>${err}</li>`).join("");
+      listEl.style.display = "block";
+      return;
+    }
+
+    const res = AnimedicState.updateAccountDetails({
+      fullName: name,
+      email,
+      newPassword: pwSectionOpen ? newPass : null,
+      photo: draftAcctPhoto
+    });
+    if (!res.ok) {
+      listEl.innerHTML = `<li>${res.error}</li>`;
+      listEl.style.display = "block";
+      return;
+    }
+
+    acctModal.classList.remove("open");
+    renderProfile();
+    AnimedicApp.showToast("Account details updated successfully.");
+  });
+
+  // --- Manage Pets (Add / Edit / Photo / Delete) ---
+  function renderPetPhotoPreview() {
+    const el = document.getElementById("pet-photo-preview");
+    el.innerHTML = draftPetPhoto ? `<img src="${draftPetPhoto}" alt="Pet">` : AnimedicApp.ICONS.paw;
+  }
+
+  function openPetEditor(pet) {
+    if (pet) {
+      editingPetId = pet.id;
+      draftPetPhoto = pet.photo || "";
+      document.getElementById("pet-editor-title").textContent = "Edit Pet Profile";
+      document.getElementById("edit-pet-name").value = pet.name;
+      document.getElementById("edit-pet-type").value = pet.type;
+      document.getElementById("edit-pet-gender").value = pet.gender;
+    } else {
+      editingPetId = null;
+      draftPetPhoto = "";
+      document.getElementById("pet-editor-title").textContent = "Add a New Pet";
+      document.getElementById("pet-editor-form").reset();
+    }
+    renderPetPhotoPreview();
+    petModal.classList.add("open");
+  }
+
+  document.getElementById("add-pet-open-btn").onclick = () => openPetEditor(null);
+  document.getElementById("pet-editor-close").onclick = () => petModal.classList.remove("open");
+
+  const petPhotoInput = document.getElementById("pet-photo-input");
+  document.getElementById("pet-photo-upload-btn").onclick = () => petPhotoInput.click();
+  petPhotoInput.onchange = async () => {
+    if (petPhotoInput.files && petPhotoInput.files[0]) {
+      draftPetPhoto = await AnimedicApp.compressImage(petPhotoInput.files[0], 256);
+      renderPetPhotoPreview();
+    }
+  };
+  document.getElementById("pet-photo-remove-btn").onclick = () => {
+    draftPetPhoto = "";
+    petPhotoInput.value = "";
+    renderPetPhotoPreview();
+  };
+
+  document.getElementById("pet-editor-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const payload = {
+      name: document.getElementById("edit-pet-name").value.trim(),
+      type: document.getElementById("edit-pet-type").value,
+      gender: document.getElementById("edit-pet-gender").value,
+      photo: draftPetPhoto
+    };
+    if (editingPetId) {
+      AnimedicState.updatePet(editingPetId, payload);
+      AnimedicApp.showToast("Pet profile updated.");
+    } else {
+      AnimedicState.addPet({ id: "pet-" + Date.now(), ...payload });
+      AnimedicApp.showToast("New pet profile added.");
+    }
+    petModal.classList.remove("open");
+    renderProfile();
+  });
+
+  document.getElementById("delete-pet-cancel-btn").onclick = () => deletePetModal.classList.remove("open");
+  document.getElementById("delete-pet-confirm-btn").onclick = () => {
+    if (deletingPetId) {
+      AnimedicState.deletePet(deletingPetId);
+      deletingPetId = null;
+      deletePetModal.classList.remove("open");
+      renderProfile();
+      AnimedicApp.showToast("Pet profile removed.");
+    }
+  };
+
+  // --- Monthly Pet Plan ---
+  document.getElementById("sub-modal-close").onclick = () => subModal.classList.remove("open");
+  document.getElementById("confirm-activate-plan-btn").onclick = () => {
+    AnimedicState.setPlan("Monthly Pet Plan");
+    subModal.classList.remove("open");
+    renderProfile();
+    AnimedicApp.showToast("Monthly Pet Plan activated. All perks are now live.");
+  };
+
+  document.getElementById("cancel-plan-close").onclick = () => cancelPlanModal.classList.remove("open");
+  document.getElementById("keep-plan-btn").onclick = () => cancelPlanModal.classList.remove("open");
+  document.getElementById("confirm-cancel-plan-btn").onclick = () => {
+    AnimedicState.setPlan("Pay-Per-Visit");
+    cancelPlanModal.classList.remove("open");
+    renderProfile();
+    AnimedicApp.showToast("Monthly Pet Plan cancelled. Reverted to Pay-Per-Visit.");
+  };
+
+  document.getElementById("signout-btn").onclick = () => {
+    AnimedicState.clearSession();
+    window.location.replace("auth.html");
+  };
+
+  renderProfile();
+}
+
+  </script>
+</body>
+</html>

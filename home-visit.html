@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home-Visit Care | Animedic</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="app-sidebar"></aside>
+    <div class="main-wrapper">
+      <header class="top-header" id="app-header"></header>
+      <main class="page-content">
+        
+<div class="section-header">
+  <div>
+    <h1 style="font-size:1.45rem;">Home-Visit Care</h1>
+    <p class="section-sub">Verified veterinarians and mobile groomers dispatched straight to your home.</p>
+  </div>
+  <div class="tabs-bar">
+    <button type="button" class="tab-btn active" id="tab-all">All (23)</button>
+    <button type="button" class="tab-btn" id="tab-vets">Veterinarians (14)</button>
+    <button type="button" class="tab-btn" id="tab-groomers">Groomers (9)</button>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <input type="text" id="hv-search" class="form-input" placeholder="Search by name, specialty, or area...">
+  <select id="hv-specialty-filter" class="form-select"></select>
+  <select id="hv-pet-filter" class="form-select">
+    <option value="All">All Pet Types</option>
+    <option value="Cat">Cat</option>
+    <option value="Dog">Dog</option>
+    <option value="Rabbit">Rabbit</option>
+    <option value="Hamster">Hamster</option>
+    <option value="Bird">Bird</option>
+    <option value="Other">Other</option>
+  </select>
+  <select id="hv-sort" class="form-select">
+    <option value="distance">Sort: Nearest (km)</option>
+    <option value="price">Sort: Lowest Price</option>
+    <option value="rating">Sort: Highest Rating</option>
+  </select>
+</div>
+
+<div class="grid-3" id="hv-grid"></div>
+
+<!-- Pre-Booking Modal -->
+<div class="modal-backdrop" id="hv-modal">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="hv-modal-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <span class="badge badge-orange mb-2" id="hv-modal-badge">Home-Visit Booking</span>
+    <h2 id="hv-modal-title" style="font-size:1.28rem;margin-bottom:4px;"></h2>
+    <p id="hv-modal-sub" style="font-size:0.82rem;color:var(--slate-500);margin-bottom:16px;"></p>
+
+    <form id="hv-booking-form">
+      <div class="form-group">
+        <div class="flex-between">
+          <label class="form-label" style="margin-bottom:0;">Select Pets</label>
+          <label style="font-size:0.8rem;font-weight:600;color:var(--orange-primary);display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+            <input type="checkbox" id="hv-select-all" style="accent-color:var(--orange-primary);">
+            <span>Select All Pets</span>
+          </label>
+        </div>
+        <div class="pet-check-list" id="hv-pet-checkboxes"></div>
+        <div class="form-error" id="hv-pet-err">Please select at least 1 pet to continue.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="hv-service-select">Service Type</label>
+        <select id="hv-service-select" class="form-select" required></select>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label" for="hv-date">Preferred Date</label>
+          <input type="date" id="hv-date" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="hv-time">Time Slot</label>
+          <select id="hv-time" class="form-select" required>
+            <option value="09:00">09:00 WIB</option>
+            <option value="11:30">11:30 WIB</option>
+            <option value="14:00">14:00 WIB</option>
+            <option value="16:30">16:30 WIB</option>
+            <option value="19:00">19:00 WIB</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="hv-behavior-select">Pet Behavioral Assessment</label>
+        <select id="hv-behavior-select" class="form-select">
+          <option value="Calm & Friendly">Calm & Friendly</option>
+          <option value="Shy & Nervous">Shy & Nervous</option>
+          <option value="Anxious & Fearful">Anxious & Fearful</option>
+          <option value="Reactive & Aggressive">Reactive & Aggressive</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="hv-pay-method">Payment Method</label>
+        <select id="hv-pay-method" class="form-select" required>
+          <option value="Debit / Credit Card">Debit / Credit Card</option>
+          <option value="QRIS">QRIS</option>
+          <option value="GoPay">GoPay</option>
+          <option value="OVO">OVO</option>
+          <option value="Bank Virtual Account">Bank Virtual Account</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="background:var(--amber-soft);padding:12px;border-radius:10px;border:1px solid #FDE68A;">
+        <label style="display:flex;align-items:flex-start;gap:10px;font-size:0.82rem;color:#92400E;cursor:pointer;">
+          <input type="checkbox" id="hv-disclaimer-check" style="margin-top:3px;" required>
+          <span><strong>Pet Behavioral Disclaimer:</strong> I confirm I have accurately disclosed my pet's temperament so the practitioner can arrive with safe handling equipment.</span>
+        </label>
+      </div>
+
+      <div style="background:var(--bg-page);border:1px solid var(--slate-200);border-radius:12px;padding:14px;margin-bottom:16px;font-size:0.85rem;">
+        <div class="flex-between" style="margin-bottom:6px;gap:8px;">
+          <span style="color:var(--slate-600);" id="hv-fee-base-label">Service Subtotal</span>
+          <strong id="hv-fee-base" style="white-space:nowrap;">Rp 0</strong>
+        </div>
+        <div class="flex-between" style="margin-bottom:6px;">
+          <span style="color:var(--slate-600);" id="hv-fee-travel-label">Distance Travel Fee</span>
+          <div id="hv-fee-travel">Rp 0</div>
+        </div>
+        <div id="hv-plan-discount-row" style="display:none;margin-bottom:6px;">
+          <span class="badge badge-orange">Monthly Pet Plan -15%</span>
+        </div>
+        <div class="flex-between" style="border-top:1px solid var(--slate-200);padding-top:8px;margin-top:6px;font-size:0.95rem;">
+          <strong>Total Payment</strong>
+          <strong style="color:var(--orange-primary);" id="hv-fee-total">Rp 0</strong>
+        </div>
+        <p style="font-size:0.75rem;color:var(--slate-500);margin-top:6px;">
+          Payment protected until your service is complete.
+        </p>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">Confirm & Pay</button>
+    </form>
+  </div>
+</div>
+
+      </main>
+    </div>
+  </div>
+  <nav class="bottom-nav" id="app-bottom-nav"></nav>
+
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const currentUser = AnimedicApp.initShell("home-visit");
+    
+if (currentUser) {
+  const params = new URLSearchParams(window.location.search);
+  const tabParam = params.get("tab");
+  let activeTab = tabParam === "vets" ? "vets" : (tabParam === "groomers" ? "groomers" : "all");
+  let selectedProvider = null;
+
+  // Varied realistic multipliers per service type (no slashes in names)
+  const VET_SERVICES = [
+    { name: "Deworming & Parasite Prevention", mult: 0.72 },
+    { name: "General Health Examination", mult: 1.00 },
+    { name: "Skin & Ear Treatment", mult: 1.10 },
+    { name: "Annual Vaccination", mult: 1.18 },
+    { name: "Post-Surgery Wound Care", mult: 1.32 },
+    { name: "Urgent Sick Pet Visit", mult: 1.45 }
+  ];
+
+  const GROOMER_SERVICES = [
+    { name: "Nail Trim & Ear Cleaning", mult: 0.65 },
+    { name: "Basic Bath & Blow Dry", mult: 1.00 },
+    { name: "Stress-Free Feline Grooming", mult: 1.12 },
+    { name: "Medicated Anti-Tick Bath", mult: 1.22 },
+    { name: "De-Shedding Spa Treatment", mult: 1.35 },
+    { name: "Full Styling & Haircut", mult: 1.50 }
+  ];
+
+  function round5k(val) {
+    return Math.max(50000, Math.round(val / 5000) * 5000);
+  }
+
+  function getProviderServices(provider) {
+    const base = provider.role === "vet" ? provider.homeVisitPrice : provider.basePrice;
+    const defs = provider.role === "vet" ? VET_SERVICES : GROOMER_SERVICES;
+    return defs.map(d => ({ name: d.name, price: round5k(base * d.mult) }));
+  }
+
+  function getStartingPrice(provider) {
+    const svcs = getProviderServices(provider);
+    return Math.min(...svcs.map(s => s.price));
+  }
+
+  const tabAll = document.getElementById("tab-all");
+  const tabVets = document.getElementById("tab-vets");
+  const tabGroomers = document.getElementById("tab-groomers");
+  const searchInput = document.getElementById("hv-search");
+  const specialtyFilter = document.getElementById("hv-specialty-filter");
+  const petFilter = document.getElementById("hv-pet-filter");
+  const sortSelect = document.getElementById("hv-sort");
+  const gridEl = document.getElementById("hv-grid");
+  const modal = document.getElementById("hv-modal");
+  const petBoxEl = document.getElementById("hv-pet-checkboxes");
+  const selectAllEl = document.getElementById("hv-select-all");
+  const petErrEl = document.getElementById("hv-pet-err");
+  const svcSel = document.getElementById("hv-service-select");
+
+  function populateSpecialtyFilter() {
+    let options = ['<option value="All">All Specialties</option>'];
+    if (activeTab === "vets" || activeTab === "all") {
+      ANIMEDIC_DATA.vetSpecialties.forEach(s => options.push(`<option value="${s}">${s}</option>`));
+    }
+    if (activeTab === "groomers" || activeTab === "all") {
+      ANIMEDIC_DATA.groomerSpecialties.forEach(s => options.push(`<option value="${s}">${s}</option>`));
+    }
+    specialtyFilter.innerHTML = options.join("");
+  }
+
+  function setTab(tab) {
+    activeTab = tab;
+    tabAll.classList.toggle("active", tab === "all");
+    tabVets.classList.toggle("active", tab === "vets");
+    tabGroomers.classList.toggle("active", tab === "groomers");
+    populateSpecialtyFilter();
+    renderList();
+  }
+
+  tabAll.onclick = () => setTab("all");
+  tabVets.onclick = () => setTab("vets");
+  tabGroomers.onclick = () => setTab("groomers");
+  searchInput.oninput = renderList;
+  specialtyFilter.onchange = renderList;
+  petFilter.onchange = renderList;
+  sortSelect.onchange = renderList;
+
+  function getCombinedList() {
+    const vets = ANIMEDIC_DATA.vets.map(v => {
+      const obj = { ...v, role: "vet" };
+      obj.startingPrice = getStartingPrice(obj);
+      return obj;
+    });
+    const groomers = ANIMEDIC_DATA.groomers.map(g => {
+      const obj = { ...g, role: "groomer" };
+      obj.startingPrice = getStartingPrice(obj);
+      return obj;
+    });
+    if (activeTab === "vets") return vets;
+    if (activeTab === "groomers") return groomers;
+    return [...vets, ...groomers];
+  }
+
+  function renderList() {
+    const q = searchInput.value.trim().toLowerCase();
+    const spec = specialtyFilter.value;
+    const petType = petFilter.value;
+    const sortBy = sortSelect.value;
+
+    let list = getCombinedList();
+
+    if (q) {
+      list = list.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.specialty.toLowerCase().includes(q) ||
+        p.location.toLowerCase().includes(q)
+      );
+    }
+    if (spec !== "All") {
+      list = list.filter(p => p.specialty === spec);
+    }
+    if (petType !== "All") {
+      list = list.filter(p => p.supportedPets.includes(petType));
+    }
+
+    list.sort((a, b) => {
+      if (sortBy === "distance") return a.distanceKm - b.distanceKm;
+      if (sortBy === "rating") return b.rating - a.rating;
+      return a.startingPrice - b.startingPrice;
+    });
+
+    if (list.length === 0) {
+      gridEl.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;color:var(--slate-500);">No practitioners match your current filter.</div>';
+      return;
+    }
+
+    gridEl.innerHTML = list.map(p => {
+      const mins = AnimedicApp.estimateTravelMinutes(p.distanceKm);
+      const roleLabel = p.role === "vet" ? "Veterinarian" : "Groomer";
+      const roleBadgeClass = p.role === "vet" ? "badge-orange" : "badge-groomer";
+      return `
+        <div class="card card-hover provider-card">
+          <div>
+            <div class="flex-between mb-2">
+              <div class="flex-row" style="gap:6px;">
+                <span class="badge badge-green">${AnimedicApp.ICONS.shield} Verified</span>
+                <span class="badge ${roleBadgeClass}">${roleLabel}</span>
+              </div>
+              <span class="badge badge-navy">${AnimedicApp.ICONS.star} ${p.rating.toFixed(1)}</span>
+            </div>
+            <h3 style="font-size:1.05rem;margin-bottom:2px;">${p.name}</h3>
+            <div style="font-size:0.84rem;color:var(--orange-primary);font-weight:600;margin-bottom:10px;">${p.specialty}</div>
+            <div class="provider-meta">
+              <span>${AnimedicApp.ICONS.pin} ${p.location} (${p.distanceKm} km)</span>
+              <span>Est. ${mins} mins</span>
+            </div>
+            <div class="flex-row mt-2" style="gap:5px;">
+              ${p.supportedPets.map(t => `<span class="badge badge-navy">${t}</span>`).join("")}
+            </div>
+          </div>
+          <div class="flex-between" style="border-top:1px solid var(--slate-100);padding-top:12px;">
+            <div>
+              <div style="font-size:0.72rem;color:var(--slate-500);">Starting from</div>
+              <div class="price-tag">${AnimedicApp.formatIDR(p.startingPrice)}</div>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm book-hv-btn" data-id="${p.id}" data-role="${p.role}">Book Visit</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    gridEl.querySelectorAll(".book-hv-btn").forEach(btn => {
+      btn.onclick = () => openBookingModal(btn.dataset.id, btn.dataset.role);
+    });
+  }
+
+  function getSelectedPets() {
+    const checkedIds = Array.from(petBoxEl.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
+    return (currentUser.pets || []).filter(p => checkedIds.includes(p.id));
+  }
+
+  function updateModalSummary() {
+    if (!selectedProvider) return;
+    const svcs = getProviderServices(selectedProvider);
+    const chosenSvc = svcs.find(s => s.name === svcSel.value) || svcs[0];
+    const chosenPets = getSelectedPets();
+    const petCount = chosenPets.length;
+    const serviceSubtotal = chosenSvc.price * petCount;
+
+    const rawTravelFee = AnimedicApp.calculateTravelFee(selectedProvider.distanceKm);
+    const hasPlan = AnimedicState.isMonthlyPlanActive();
+    const travelFee = hasPlan ? Math.round(rawTravelFee * 0.85) : rawTravelFee;
+    const total = serviceSubtotal + travelFee;
+
+    document.getElementById("hv-fee-base-label").textContent = `${chosenSvc.name}: ${AnimedicApp.formatIDR(chosenSvc.price)} x ${petCount} pet${petCount === 1 ? "" : "s"}`;
+    document.getElementById("hv-fee-base").textContent = AnimedicApp.formatIDR(serviceSubtotal);
+    document.getElementById("hv-fee-travel-label").textContent = `Distance Travel Fee (${selectedProvider.distanceKm} km, once per visit)`;
+    if (hasPlan) {
+      document.getElementById("hv-fee-travel").innerHTML = `<span class="price-strike">${AnimedicApp.formatIDR(rawTravelFee)}</span><strong>${AnimedicApp.formatIDR(travelFee)}</strong>`;
+      document.getElementById("hv-plan-discount-row").style.display = "block";
+    } else {
+      document.getElementById("hv-fee-travel").innerHTML = `<strong>${AnimedicApp.formatIDR(travelFee)}</strong>`;
+      document.getElementById("hv-plan-discount-row").style.display = "none";
+    }
+    document.getElementById("hv-fee-total").textContent = AnimedicApp.formatIDR(total);
+
+    const allCbs = petBoxEl.querySelectorAll("input[type='checkbox']");
+    selectAllEl.checked = allCbs.length > 0 && petCount === allCbs.length;
+    if (petCount > 0) petErrEl.style.display = "none";
+  }
+
+  function openBookingModal(id, role) {
+    const list = role === "vet" ? ANIMEDIC_DATA.vets : ANIMEDIC_DATA.groomers;
+    const raw = list.find(p => p.id === id);
+    if (!raw) return;
+    selectedProvider = { ...raw, role };
+
+    const isVet = role === "vet";
+    document.getElementById("hv-modal-badge").textContent = isVet ? "Home-Visit Veterinarian" : "Home-Visit Groomer";
+    document.getElementById("hv-modal-title").textContent = selectedProvider.name;
+    document.getElementById("hv-modal-sub").textContent = `${selectedProvider.specialty} | ${selectedProvider.location} (${selectedProvider.distanceKm} km from your location)`;
+
+    const pets = currentUser.pets || [];
+    petBoxEl.innerHTML = pets.map((p, idx) => `
+      <label class="pet-check-item">
+        <div class="flex-row" style="gap:8px;">
+          <input type="checkbox" value="${p.id}" ${idx === 0 ? "checked" : ""}>
+          <strong>${p.name}</strong>
+          <span style="font-size:0.78rem;color:var(--slate-500);">${p.type}</span>
+        </div>
+        ${AnimedicApp.renderGenderBadge(p.gender)}
+      </label>
+    `).join("");
+
+    petBoxEl.querySelectorAll("input[type='checkbox']").forEach(cb => {
+      cb.onchange = updateModalSummary;
+    });
+
+    const svcs = getProviderServices(selectedProvider);
+    svcSel.innerHTML = svcs.map(s => `<option value="${s.name}">${s.name} (${AnimedicApp.formatIDR(s.price)} per pet)</option>`).join("");
+    svcSel.selectedIndex = 1; // Default to standard exam / bath
+
+    const tomorrow = new Date(Date.now() + 24 * 3600 * 1000).toISOString().split("T")[0];
+    document.getElementById("hv-date").value = tomorrow;
+    document.getElementById("hv-disclaimer-check").checked = false;
+    petErrEl.style.display = "none";
+
+    updateModalSummary();
+    modal.classList.add("open");
+  }
+
+  selectAllEl.onchange = () => {
+    petBoxEl.querySelectorAll("input[type='checkbox']").forEach(cb => {
+      cb.checked = selectAllEl.checked;
+    });
+    updateModalSummary();
+  };
+  svcSel.onchange = updateModalSummary;
+
+  document.getElementById("hv-modal-close").onclick = () => modal.classList.remove("open");
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("open"); });
+
+  document.getElementById("hv-booking-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const chosenPets = getSelectedPets();
+    if (chosenPets.length === 0) {
+      petErrEl.style.display = "block";
+      return;
+    }
+
+    const isVet = selectedProvider.role === "vet";
+    const svcs = getProviderServices(selectedProvider);
+    const chosenSvc = svcs.find(s => s.name === svcSel.value) || svcs[0];
+    const serviceSubtotal = chosenSvc.price * chosenPets.length;
+    const rawTravelFee = AnimedicApp.calculateTravelFee(selectedProvider.distanceKm);
+    const travelFee = AnimedicState.isMonthlyPlanActive() ? Math.round(rawTravelFee * 0.85) : rawTravelFee;
+
+    const dateVal = document.getElementById("hv-date").value;
+    const timeVal = document.getElementById("hv-time").value;
+    let scheduledDate = new Date(`${dateVal}T${timeVal}:00`);
+    if (isNaN(scheduledDate.getTime()) || scheduledDate.getTime() < Date.now() + 3 * 3600 * 1000) {
+      scheduledDate = new Date(Date.now() + 6 * 3600 * 1000);
+    }
+
+    AnimedicState.addBooking({
+      type: isVet ? "Home-Visit Vet" : "Home-Visit Groomer",
+      providerName: selectedProvider.name,
+      serviceName: `${chosenSvc.name} (${chosenPets.length} pet${chosenPets.length === 1 ? "" : "s"})`,
+      petId: chosenPets[0].id,
+      petName: chosenPets.map(p => p.name).join(", "),
+      date: dateVal,
+      time: timeVal,
+      scheduledAt: scheduledDate.toISOString(),
+      paymentMethod: document.getElementById("hv-pay-method").value,
+      behavior: document.getElementById("hv-behavior-select").value,
+      baseFee: serviceSubtotal,
+      travelFee: travelFee,
+      totalAmount: serviceSubtotal + travelFee,
+      commissionRate: isVet ? 0.15 : 0.20
+    });
+
+    modal.classList.remove("open");
+    AnimedicApp.showToast("Booking confirmed. Payment protected until your service is complete.");
+    setTimeout(() => { window.location.href = "bookings.html"; }, 900);
+  });
+
+  setTab(activeTab);
+}
+
+  </script>
+</body>
+</html>

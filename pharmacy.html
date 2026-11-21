@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regulated Pharmacy | Animedic</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="app-sidebar"></aside>
+    <div class="main-wrapper">
+      <header class="top-header" id="app-header"></header>
+      <main class="page-content">
+        
+<!-- Step 1: Pharmacy Directory -->
+<div id="pharmacy-directory-view" class="fade-view">
+  <div class="section-header">
+    <div>
+      <h1 style="font-size:1.45rem;">Select a Pet Pharmacy</h1>
+      <p class="section-sub">Choose from 8 verified veterinary pharmacies near your location.</p>
+    </div>
+  </div>
+  <div class="grid-3" id="pharmacies-grid"></div>
+</div>
+
+<!-- Step 2: Selected Pharmacy Catalog -->
+<div id="pharmacy-catalog-view" class="fade-view" style="display:none;opacity:0;">
+  <div class="section-header">
+    <div>
+      <button type="button" class="btn btn-outline btn-sm mb-2" id="back-to-pharmacies-btn">Back to Pharmacies</button>
+      <h1 id="selected-pharmacy-title" style="font-size:1.45rem;">Pharmacy Catalog</h1>
+      <p class="section-sub" id="selected-pharmacy-sub"></p>
+    </div>
+    <button type="button" class="btn btn-navy" id="open-cart-btn">
+      <span id="cart-btn-label">Cart (0)</span>
+    </button>
+  </div>
+
+  <div id="rx-status-banner" class="mb-3"></div>
+
+  <div class="tabs-bar mb-3" style="flex-wrap:wrap;">
+    <button type="button" class="tab-btn active" data-cat="All">All Products</button>
+    <button type="button" class="tab-btn" data-cat="Preventative & Flea/Tick (OTC)">OTC & Preventative</button>
+    <button type="button" class="tab-btn" data-cat="Therapeutic Nutrition">Therapeutic Nutrition</button>
+    <button type="button" class="tab-btn" data-cat="Prescription Medications (Rx)">Prescription (Rx)</button>
+  </div>
+
+  <div class="grid-3" id="pharmacy-grid"></div>
+</div>
+
+<!-- Slide-over Cart Drawer -->
+<div class="drawer-backdrop" id="cart-drawer">
+  <div class="drawer-panel">
+    <div class="flex-between mb-2">
+      <h2 style="font-size:1.2rem;">Your Pharmacy Cart</h2>
+      <button type="button" class="btn btn-outline btn-sm" id="close-cart-btn">Close</button>
+    </div>
+    <p id="cart-pharmacy-label" style="font-size:0.8rem;color:var(--slate-500);margin-bottom:14px;"></p>
+    <div id="cart-items" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;"></div>
+    <div style="border-top:1px solid var(--slate-200);padding-top:14px;margin-top:14px;font-size:0.86rem;">
+      <div class="flex-between mb-1">
+        <span style="color:var(--slate-600);">Subtotal</span>
+        <strong id="cart-subtotal">Rp 0</strong>
+      </div>
+      <div class="flex-between mb-1">
+        <span style="color:var(--slate-600);">Delivery Fee</span>
+        <div id="cart-delivery-fee">Rp 0</div>
+      </div>
+      <div id="cart-plan-badge" style="display:none;margin-bottom:8px;">
+        <span class="badge badge-orange">Monthly Pet Plan -15%</span>
+      </div>
+      <div class="flex-between mb-2" style="border-top:1px solid var(--slate-100);padding-top:8px;">
+        <strong>Total Payment</strong>
+        <strong style="color:var(--orange-primary);font-size:1.1rem;" id="cart-total">Rp 0</strong>
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label" for="cart-pay-method" style="font-size:0.8rem;">Payment Method</label>
+        <select id="cart-pay-method" class="form-select" style="padding:8px 10px;font-size:0.84rem;">
+          
+          <option value="Debit / Credit Card">Debit / Credit Card</option>
+          <option value="QRIS">QRIS</option>
+          <option value="GoPay">GoPay</option>
+          <option value="OVO">OVO</option>
+          <option value="Bank Virtual Account">Bank Virtual Account</option>
+
+        </select>
+      </div>
+      <button type="button" class="btn btn-primary btn-block" id="checkout-cart-btn">Confirm & Pay</button>
+    </div>
+  </div>
+</div>
+
+      </main>
+    </div>
+  </div>
+  <nav class="bottom-nav" id="app-bottom-nav"></nav>
+
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const currentUser = AnimedicApp.initShell("pharmacy");
+    
+if (currentUser) {
+  let selectedPharmacy = null;
+  let activeCat = "All";
+  const dirView = document.getElementById("pharmacy-directory-view");
+  const catView = document.getElementById("pharmacy-catalog-view");
+  const pharmaciesGrid = document.getElementById("pharmacies-grid");
+  const grid = document.getElementById("pharmacy-grid");
+  const drawer = document.getElementById("cart-drawer");
+  const rxUnlocked = Boolean(currentUser.rxUnlocked);
+
+  // Render Step 1: 8 Pharmacies
+  pharmaciesGrid.innerHTML = ANIMEDIC_DATA.pharmacies.map(ph => `
+    <div class="card card-hover provider-card" style="cursor:pointer;" data-pharm="${ph.id}">
+      <div>
+        <div class="flex-between mb-2">
+          <span class="badge badge-green">${AnimedicApp.ICONS.shield} Verified</span>
+          <span class="badge badge-navy">${AnimedicApp.ICONS.star} ${ph.rating.toFixed(1)}</span>
+        </div>
+        <h3 style="font-size:1.05rem;margin-bottom:4px;">${ph.name}</h3>
+        <div class="provider-meta">
+          <span>${AnimedicApp.ICONS.pin} ${ph.location} (${ph.distanceKm} km from your location)</span>
+        </div>
+        <div style="font-size:0.8rem;color:var(--slate-500);margin-top:8px;">Est. delivery: ${ph.estDelivery}</div>
+      </div>
+      <div class="flex-between" style="border-top:1px solid var(--slate-100);padding-top:12px;">
+        <div>
+          <div style="font-size:0.72rem;color:var(--slate-500);">Delivery Fee</div>
+          <div class="price-tag" style="font-size:0.96rem;">${AnimedicApp.formatIDR(ph.deliveryFee)}</div>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm">Browse Catalog</button>
+      </div>
+    </div>
+  `).join("");
+
+  pharmaciesGrid.querySelectorAll("[data-pharm]").forEach(card => {
+    card.onclick = () => {
+      selectedPharmacy = ANIMEDIC_DATA.pharmacies.find(p => p.id === card.dataset.pharm);
+      openPharmacyCatalog();
+    };
+  });
+
+  function openPharmacyCatalog() {
+    document.getElementById("selected-pharmacy-title").textContent = selectedPharmacy.name;
+    document.getElementById("selected-pharmacy-sub").textContent = `${selectedPharmacy.location} (${selectedPharmacy.distanceKm} km from your location) | Est. delivery ${selectedPharmacy.estDelivery}`;
+    dirView.classList.add("fade-out");
+    setTimeout(() => {
+      dirView.style.display = "none";
+      catView.style.display = "block";
+      requestAnimationFrame(() => { catView.style.opacity = "1"; });
+      renderProducts();
+      updateCartBadge();
+    }, 200);
+  }
+
+  document.getElementById("back-to-pharmacies-btn").onclick = () => {
+    catView.style.opacity = "0";
+    setTimeout(() => {
+      catView.style.display = "none";
+      dirView.style.display = "block";
+      dirView.classList.remove("fade-out");
+    }, 200);
+  };
+
+  const banner = document.getElementById("rx-status-banner");
+  if (rxUnlocked) {
+    banner.innerHTML = `<div class="notice-banner notice-green"><div><strong>Prescription Access Unlocked:</strong> Your completed Home-Visit Vet examination has verified prescription eligibility for Rx items.</div></div>`;
+  } else {
+    banner.innerHTML = `<div class="notice-banner notice-orange"><div><strong>Regulatory Prescription Compliance:</strong> OTC items and therapeutic diets can be ordered immediately. Prescription (Rx) medications automatically unlock once you complete a Home-Visit Vet booking in <a href="bookings.html" style="text-decoration:underline;font-weight:700;">My Bookings</a>.</div></div>`;
+  }
+
+  function updateCartBadge() {
+    const cart = AnimedicState.getCart();
+    const count = cart.reduce((sum, i) => sum + i.qty, 0);
+    document.getElementById("cart-btn-label").textContent = `Cart (${count})`;
+  }
+
+  function renderProducts() {
+    const items = activeCat === "All"
+      ? ANIMEDIC_DATA.pharmacy
+      : ANIMEDIC_DATA.pharmacy.filter(p => p.category === activeCat);
+
+    grid.innerHTML = items.map(p => {
+      const locked = p.requiresPrescription && !rxUnlocked;
+      return `
+        <div class="card provider-card" style="opacity:${locked ? "0.86" : "1"};">
+          <div>
+            <div class="flex-between mb-2">
+              <span class="badge ${p.requiresPrescription ? (locked ? "badge-red" : "badge-green") : "badge-navy"}">
+                ${p.requiresPrescription ? (locked ? AnimedicApp.ICONS.lock + " Rx Locked" : "Rx Unlocked") : "OTC"}
+              </span>
+              <span style="font-size:0.74rem;color:var(--slate-500);">${p.category.split(" ")[0]}</span>
+            </div>
+            <h3 style="font-size:0.98rem;margin-bottom:6px;">${p.name}</h3>
+            <p style="font-size:0.82rem;color:var(--slate-600);">${p.description}</p>
+          </div>
+          <div class="flex-between" style="border-top:1px solid var(--slate-100);padding-top:12px;">
+            <div class="price-tag">${AnimedicApp.formatIDR(p.price)}</div>
+            ${locked
+              ? `<a href="home-visit.html?tab=vets" class="btn btn-outline btn-sm">Requires Vet Visit</a>`
+              : `<button type="button" class="btn btn-primary btn-sm add-cart-btn" data-id="${p.id}">Add to Cart</button>`
+            }
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    grid.querySelectorAll(".add-cart-btn").forEach(btn => {
+      btn.onclick = () => {
+        const prod = ANIMEDIC_DATA.pharmacy.find(x => x.id === btn.dataset.id);
+        const cart = AnimedicState.getCart();
+        const existing = cart.find(c => c.id === prod.id);
+        if (existing) existing.qty += 1;
+        else cart.push({ id: prod.id, name: prod.name, price: prod.price, qty: 1 });
+        AnimedicState.saveCart(cart);
+        updateCartBadge();
+        AnimedicApp.showToast("Added " + prod.name + " to cart.");
+      };
+    });
+  }
+
+  function renderCartDrawer() {
+    const cart = AnimedicState.getCart();
+    const listEl = document.getElementById("cart-items");
+    const hasPlan = AnimedicState.isMonthlyPlanActive();
+    const rawDelivery = selectedPharmacy ? selectedPharmacy.deliveryFee : 15000;
+    const deliveryFee = hasPlan ? Math.round(rawDelivery * 0.85) : rawDelivery;
+
+    document.getElementById("cart-pharmacy-label").textContent = selectedPharmacy
+      ? `Fulfilled by ${selectedPharmacy.name} to Rawamangun, East Jakarta, Indonesia`
+      : "Delivery to Rawamangun, East Jakarta, Indonesia";
+
+    if (cart.length === 0) {
+      listEl.innerHTML = '<p style="color:var(--slate-500);font-size:0.88rem;text-align:center;margin-top:40px;">Your pharmacy cart is empty.</p>';
+      document.getElementById("cart-subtotal").textContent = "Rp 0";
+      document.getElementById("cart-delivery-fee").textContent = "Rp 0";
+      document.getElementById("cart-plan-badge").style.display = "none";
+      document.getElementById("cart-total").textContent = "Rp 0";
+      return;
+    }
+
+    let subtotal = 0;
+    listEl.innerHTML = cart.map((item, idx) => {
+      subtotal += item.price * item.qty;
+      return `
+        <div style="padding:10px;border:1px solid var(--slate-200);border-radius:10px;" class="flex-between">
+          <div>
+            <div style="font-weight:600;font-size:0.86rem;">${item.name}</div>
+            <div style="font-size:0.78rem;color:var(--slate-500);">${item.qty} x ${AnimedicApp.formatIDR(item.price)}</div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm rm-cart" data-idx="${idx}">Remove</button>
+        </div>
+      `;
+    }).join("");
+
+    document.getElementById("cart-subtotal").textContent = AnimedicApp.formatIDR(subtotal);
+    if (hasPlan) {
+      document.getElementById("cart-delivery-fee").innerHTML = `<span class="price-strike">${AnimedicApp.formatIDR(rawDelivery)}</span><strong>${AnimedicApp.formatIDR(deliveryFee)}</strong>`;
+      document.getElementById("cart-plan-badge").style.display = "block";
+    } else {
+      document.getElementById("cart-delivery-fee").innerHTML = `<strong>${AnimedicApp.formatIDR(deliveryFee)}</strong>`;
+      document.getElementById("cart-plan-badge").style.display = "none";
+    }
+    document.getElementById("cart-total").textContent = AnimedicApp.formatIDR(subtotal + deliveryFee);
+
+    listEl.querySelectorAll(".rm-cart").forEach(b => {
+      b.onclick = () => {
+        const c = AnimedicState.getCart();
+        c.splice(parseInt(b.dataset.idx, 10), 1);
+        AnimedicState.saveCart(c);
+        updateCartBadge();
+        renderCartDrawer();
+      };
+    });
+  }
+
+  document.querySelectorAll(".tabs-bar .tab-btn").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll(".tabs-bar .tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      activeCat = btn.dataset.cat;
+      renderProducts();
+    };
+  });
+
+  document.getElementById("open-cart-btn").onclick = () => { renderCartDrawer(); drawer.classList.add("open"); };
+  document.getElementById("close-cart-btn").onclick = () => drawer.classList.remove("open");
+
+  document.getElementById("checkout-cart-btn").onclick = () => {
+    const cart = AnimedicState.getCart();
+    if (cart.length === 0) return;
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const rawDelivery = selectedPharmacy ? selectedPharmacy.deliveryFee : 15000;
+    const deliveryFee = AnimedicState.isMonthlyPlanActive() ? Math.round(rawDelivery * 0.85) : rawDelivery;
+    AnimedicState.addBooking({
+      type: "Pharmacy Order",
+      providerName: selectedPharmacy ? selectedPharmacy.name : "Animedic Pharmacy",
+      serviceName: cart.map(i => `${i.qty}x ${i.name}`).join(", "),
+      petName: (currentUser.pets[0] && currentUser.pets[0].name) || "Household Pets",
+      date: new Date().toISOString().split("T")[0],
+      totalAmount: subtotal + deliveryFee,
+      commissionRate: 0.15
+    });
+    AnimedicState.saveCart([]);
+    updateCartBadge();
+    drawer.classList.remove("open");
+    AnimedicApp.showToast("Pharmacy order placed.");
+    setTimeout(() => { window.location.href = "bookings.html"; }, 900);
+  };
+}
+
+  </script>
+</body>
+</html>
