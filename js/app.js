@@ -179,6 +179,9 @@ const AnimedicApp = {
           </button>
         </div>
         <div class="header-right">
+          <button type="button" class="mobile-loc-btn" id="open-location-mobile-btn" title="Simulated Location" aria-label="Simulated Location">
+            ${this.ICONS.pin}
+          </button>
           <button type="button" class="demo-pill-btn" id="open-demo-info-btn" title="Demo Info">
             ${this.ICONS.info}
             <span class="demo-text">Demo Info</span>
@@ -194,8 +197,8 @@ const AnimedicApp = {
         navItems[0],
         navItems[1],
         navItems[2],
-        navItems[4],
-        navItems[5]
+        navItems[3],
+        navItems[4]
       ];
       bottomEl.innerHTML = mobileItems
         .map(
@@ -219,13 +222,14 @@ const AnimedicApp = {
         if (dr) dr.classList.add("open");
       });
     }
+    const openLocModal = () => {
+      const lm = document.getElementById("location-info-modal");
+      if (lm) lm.classList.add("open");
+    };
     const locBtn = document.getElementById("open-location-info-btn");
-    if (locBtn) {
-      locBtn.addEventListener("click", () => {
-        const lm = document.getElementById("location-info-modal");
-        if (lm) lm.classList.add("open");
-      });
-    }
+    if (locBtn) locBtn.addEventListener("click", openLocModal);
+    const mobileLocBtn = document.getElementById("open-location-mobile-btn");
+    if (mobileLocBtn) mobileLocBtn.addEventListener("click", openLocModal);
     const demoBtn = document.getElementById("open-demo-info-btn");
     if (demoBtn) {
       demoBtn.addEventListener("click", () => this.openDemoModal());
@@ -311,32 +315,154 @@ const AnimedicApp = {
     modal.innerHTML = `
       <div class="modal-box">
         <button type="button" class="modal-close" id="close-demo-x" aria-label="Close">${this.ICONS.close}</button>
-        <span class="badge badge-orange mb-2">Demo Mode</span>
-        <h2 style="font-size:1.35rem;margin-bottom:12px;">Prototype Demo Mode Active</h2>
-        <div style="display:flex;flex-direction:column;gap:10px;font-size:0.9rem;color:var(--slate-600);margin-bottom:22px;">
-          <p>This is an interactive <strong>Prototype Demo</strong> built for presentation and testing purposes.</p>
-          <p>Your location is automatically set to <strong>Rawamangun, East Jakarta, Indonesia (-6.1944, 106.8892)</strong>.</p>
-          <p>This prototype does <strong>not</strong> track or use your actual current location.</p>
+
+        <!-- Slide 1: Prototype Overview -->
+        <div id="demo-slide-1" class="demo-slide">
+          <span class="badge badge-orange mb-2">Demo Mode</span>
+          <h2 style="font-size:1.35rem;margin-bottom:12px;">Prototype Demo Mode Active</h2>
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:0.9rem;color:var(--slate-600);margin-bottom:22px;">
+            <p>This is an interactive <strong>Prototype Demo</strong> built strictly for presentation and testing purposes.</p>
+            <p>All provider listings, prices, consultations, and bookings use <strong>fictional sample data</strong> so you can explore the full experience freely.</p>
+          </div>
+          <button type="button" class="btn btn-primary btn-block" id="demo-next-btn">Next</button>
         </div>
-        <button type="button" class="btn btn-primary btn-block" id="close-demo-cta">Got It, Explore Animedic</button>
+
+        <!-- Slide 2: Simulated Location & Animated Map -->
+        <div id="demo-slide-2" class="demo-slide" style="display:none;opacity:0;">
+          <span class="badge badge-orange mb-2">Simulated Location</span>
+          <h2 style="font-size:1.28rem;margin-bottom:10px;">Rawamangun, East Jakarta</h2>
+          <div id="demo-leaflet-map"></div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:0.86rem;color:var(--slate-600);margin-bottom:18px;">
+            <p>Your location is automatically set to Rawamangun, East Jakarta, Indonesia (-6.1944, 106.8892).</p>
+            <p>This prototype does not track or use your actual current location.</p>
+          </div>
+          <div class="flex-between" style="gap:10px;">
+            <button type="button" class="btn btn-outline" id="demo-back-btn">Back</button>
+            <button type="button" class="btn btn-primary" style="flex:1;" id="close-demo-cta">Got It, Explore Animedic</button>
+          </div>
+        </div>
+
+        <!-- 2-Dot Progress Indicator -->
+        <div class="demo-dots" aria-hidden="true">
+          <span class="demo-dot active" id="demo-dot-1"></span>
+          <span class="demo-dot" id="demo-dot-2"></span>
+        </div>
       </div>
     `;
     document.body.appendChild(modal);
 
     const closeFn = () => {
+      clearTimeout(this._mapFlyTimer);
       modal.classList.remove("open");
       AnimedicState.markDemoModalSeen();
     };
+
     document.getElementById("close-demo-x").onclick = closeFn;
     document.getElementById("close-demo-cta").onclick = closeFn;
     modal.addEventListener("click", (e) => {
       if (e.target === modal) closeFn();
     });
+
+    document.getElementById("demo-next-btn").onclick = () => this._showDemoSlide(2);
+    document.getElementById("demo-back-btn").onclick = () => this._showDemoSlide(1);
+  },
+
+  _showDemoSlide(slideNum) {
+    const s1 = document.getElementById("demo-slide-1");
+    const s2 = document.getElementById("demo-slide-2");
+    const d1 = document.getElementById("demo-dot-1");
+    const d2 = document.getElementById("demo-dot-2");
+    if (!s1 || !s2) return;
+
+    clearTimeout(this._mapFlyTimer);
+
+    if (slideNum === 1) {
+      s2.style.opacity = "0";
+      setTimeout(() => {
+        s2.style.display = "none";
+        s1.style.display = "block";
+        requestAnimationFrame(() => { s1.style.opacity = "1"; });
+      }, 150);
+      d1.classList.add("active");
+      d2.classList.remove("active");
+    } else {
+      s1.style.opacity = "0";
+      setTimeout(() => {
+        s1.style.display = "none";
+        s2.style.display = "block";
+        requestAnimationFrame(() => {
+          s2.style.opacity = "1";
+          this._initAndAnimateDemoMap();
+        });
+      }, 150);
+      d1.classList.remove("active");
+      d2.classList.add("active");
+    }
+  },
+
+  _initAndAnimateDemoMap() {
+    if (typeof L === "undefined") return;
+    const mapEl = document.getElementById("demo-leaflet-map");
+    if (!mapEl) return;
+
+    if (!this._demoMap) {
+      this._demoMap = L.map(mapEl, {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([-2.5, 118.0], 4);
+
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+        maxZoom: 19
+      }).addTo(this._demoMap);
+
+      const pinIcon = L.divIcon({
+        className: "animedic-map-pin",
+        html: '<svg width="32" height="32" viewBox="0 0 24 24" fill="#EA580C" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3" fill="#FFFFFF"/></svg>',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        tooltipAnchor: [0, -28]
+      });
+
+      this._demoMarker = L.marker([-6.1944, 106.8892], { icon: pinIcon })
+        .addTo(this._demoMap)
+        .bindTooltip("Rawamangun, East Jakarta", { direction: "top", offset: [0, -4] });
+    }
+
+    // Reset to full Indonesia view and invalidate size once visible
+    this._demoMap.invalidateSize(true);
+    this._demoMap.setView([-2.5, 118.0], 4, { animate: false });
+    if (this._demoMarker) this._demoMarker.closeTooltip();
+
+    this._mapFlyTimer = setTimeout(() => {
+      if (!this._demoMap) return;
+      this._demoMap.invalidateSize(true);
+      this._demoMap.flyTo([-6.1944, 106.8892], 14, { duration: 2.2 });
+      setTimeout(() => {
+        if (this._demoMarker) this._demoMarker.openTooltip();
+      }, 2250);
+    }, 500);
   },
 
   openDemoModal() {
     const modal = document.getElementById("demo-mode-modal");
-    if (modal) modal.classList.add("open");
+    if (!modal) return;
+    // Always reset cleanly to Slide 1 on open
+    clearTimeout(this._mapFlyTimer);
+    const s1 = document.getElementById("demo-slide-1");
+    const s2 = document.getElementById("demo-slide-2");
+    const d1 = document.getElementById("demo-dot-1");
+    const d2 = document.getElementById("demo-dot-2");
+    if (s1 && s2) {
+      s2.style.display = "none";
+      s2.style.opacity = "0";
+      s1.style.display = "block";
+      s1.style.opacity = "1";
+    }
+    if (d1 && d2) {
+      d1.classList.add("active");
+      d2.classList.remove("active");
+    }
+    modal.classList.add("open");
   },
 
   renderGenderBadge(gender) {

@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home Visit Care | Animedic</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -38,9 +40,12 @@
     <option value="Other">Other</option>
   </select>
   <select id="hv-sort" class="form-select">
-    <option value="distance">Sort: Nearest (km)</option>
-    <option value="price">Sort: Lowest Price</option>
-    <option value="rating">Sort: Highest Rating</option>
+    <option value="distance-asc">Nearest First</option>
+    <option value="distance-desc">Farthest First</option>
+    <option value="price-asc">Price: Lowest to Highest</option>
+    <option value="price-desc">Price: Highest to Lowest</option>
+    <option value="rating-desc">Rating: Highest to Lowest</option>
+    <option value="rating-asc">Rating: Lowest to Highest</option>
   </select>
 </div>
 
@@ -278,9 +283,13 @@ if (currentUser) {
     }
 
     list.sort((a, b) => {
-      if (sortBy === "distance") return a.distanceKm - b.distanceKm;
-      if (sortBy === "rating") return b.rating - a.rating;
-      return a.startingPrice - b.startingPrice;
+      if (sortBy === "distance-asc") return a.distanceKm - b.distanceKm;
+      if (sortBy === "distance-desc") return b.distanceKm - a.distanceKm;
+      if (sortBy === "price-asc") return a.startingPrice - b.startingPrice;
+      if (sortBy === "price-desc") return b.startingPrice - a.startingPrice;
+      if (sortBy === "rating-desc") return b.rating - a.rating;
+      if (sortBy === "rating-asc") return a.rating - b.rating;
+      return 0;
     });
 
     if (list.length === 0) {
@@ -452,7 +461,7 @@ if (currentUser) {
     }
 
     AnimedicState.addBooking({
-      type: isVet ? "Home-Visit Vet" : "Home Visit Groomer",
+      type: isVet ? "Home Visit Vet" : "Home Visit Groomer",
       providerName: selectedProvider.name,
       serviceName: `${chosenSvc.name} (${chosenPets.length} pet${chosenPets.length === 1 ? "" : "s"})`,
       petId: chosenPets[0].id,

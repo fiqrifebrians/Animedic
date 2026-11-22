@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pet Boarding & Sitters | Animedic</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -16,8 +18,16 @@
 <div class="section-header">
   <div>
     <h1 style="font-size:1.45rem;">Verified Pet Boarding & Sitters</h1>
-    <p class="section-sub">Hygiene-audited pet hotels and home sitters near Rawamangun, East Jakarta, Indonesia.</p>
+    <p class="section-sub">Hygiene-audited pet hotels and home sitters near your location.</p>
   </div>
+  <select id="hotel-sort" class="form-select" style="width:auto;min-width:210px;" aria-label="Sort pet hotels">
+    <option value="distance-asc">Nearest First</option>
+    <option value="distance-desc">Farthest First</option>
+    <option value="price-asc">Price: Lowest to Highest</option>
+    <option value="price-desc">Price: Highest to Lowest</option>
+    <option value="rating-desc">Rating: Highest to Lowest</option>
+    <option value="rating-asc">Rating: Lowest to Highest</option>
+  </select>
 </div>
 
 <div class="grid-3" id="hotel-grid"></div>
@@ -100,32 +110,82 @@ if (currentUser) {
   const petBoxEl = document.getElementById("hotel-pet-checkboxes");
   const petErrEl = document.getElementById("hotel-pet-err");
 
-  grid.innerHTML = ANIMEDIC_DATA.petHotels.map(h => `
-    <div class="card card-hover provider-card">
-      <div>
-        <div class="flex-between mb-2">
-          <span class="badge badge-green">${AnimedicApp.ICONS.shield} Hygiene Verified</span>
-          <div class="flex-row" style="gap:6px;">
-            <span class="badge badge-navy">${AnimedicApp.ICONS.star} ${h.rating.toFixed(1)}</span>
-            <span class="badge badge-orange">${h.availableSlots} slots left</span>
-          </div>
-        </div>
-        <h3 style="font-size:1.05rem;margin-bottom:2px;">${h.name}</h3>
-        <div style="font-size:0.82rem;color:var(--slate-500);margin-bottom:10px;">${h.type} | ${h.location} (${h.distanceKm} km from your location)</div>
-        <div class="flex-row" style="gap:6px;margin-bottom:10px;">
-          ${h.amenities.map(a => `<span class="badge badge-navy">${a}</span>`).join("")}
-        </div>
-        <div style="font-size:0.78rem;color:var(--slate-600);">Supported: ${h.supportedPets.join(", ")}</div>
-      </div>
-      <div class="flex-between" style="border-top:1px solid var(--slate-100);padding-top:12px;">
+  const hotelSortEl = document.getElementById("hotel-sort");
+
+  function renderHotels() {
+    const sortVal = hotelSortEl.value;
+    const list = [...ANIMEDIC_DATA.petHotels].sort((a, b) => {
+      if (sortVal === "distance-asc") return a.distanceKm - b.distanceKm;
+      if (sortVal === "distance-desc") return b.distanceKm - a.distanceKm;
+      if (sortVal === "price-asc") return a.pricePerNight - b.pricePerNight;
+      if (sortVal === "price-desc") return b.pricePerNight - a.pricePerNight;
+      if (sortVal === "rating-desc") return b.rating - a.rating;
+      if (sortVal === "rating-asc") return a.rating - b.rating;
+      return 0;
+    });
+
+    grid.innerHTML = list.map(h => `
+      <div class="card card-hover provider-card">
         <div>
-          <div style="font-size:0.72rem;color:var(--slate-500);">Nightly Rate</div>
-          <div class="price-tag">${AnimedicApp.formatIDR(h.pricePerNight)}</div>
+          <div class="flex-between mb-2">
+            <span class="badge badge-green">${AnimedicApp.ICONS.shield} Hygiene Verified</span>
+            <div class="flex-row" style="gap:6px;">
+              <span class="badge badge-navy">${AnimedicApp.ICONS.star} ${h.rating.toFixed(1)}</span>
+              <span class="badge badge-orange">${h.availableSlots} slots left</span>
+            </div>
+          </div>
+          <h3 style="font-size:1.05rem;margin-bottom:2px;">${h.name}</h3>
+          <div style="font-size:0.82rem;color:var(--slate-500);margin-bottom:10px;">${h.type} | ${h.location} (${h.distanceKm} km from your location)</div>
+          <div class="flex-row" style="gap:6px;margin-bottom:10px;">
+            ${h.amenities.map(a => `<span class="badge badge-navy">${a}</span>`).join("")}
+          </div>
+          <div style="font-size:0.78rem;color:var(--slate-600);">Supported: ${h.supportedPets.join(", ")}</div>
         </div>
-        <button type="button" class="btn btn-primary btn-sm book-hotel-btn" data-id="${h.id}">Book Stay</button>
+        <div class="flex-between" style="border-top:1px solid var(--slate-100);padding-top:12px;">
+          <div>
+            <div style="font-size:0.72rem;color:var(--slate-500);">Nightly Rate</div>
+            <div class="price-tag">${AnimedicApp.formatIDR(h.pricePerNight)}</div>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm book-hotel-btn" data-id="${h.id}">Book Stay</button>
+        </div>
       </div>
-    </div>
-  `).join("");
+    `).join("");
+
+    grid.querySelectorAll(".book-hotel-btn").forEach(btn => {
+      btn.onclick = () => openHotelModal(btn.dataset.id);
+    });
+  }
+
+  function openHotelModal(hotelId) {
+    selectedHotel = ANIMEDIC_DATA.petHotels.find(h => h.id === hotelId);
+    if (!selectedHotel) return;
+    document.getElementById("hotel-modal-title").textContent = selectedHotel.name;
+    document.getElementById("hotel-modal-sub").textContent = `${selectedHotel.type} | ${selectedHotel.location} (${selectedHotel.distanceKm} km from your location)`;
+
+    const pets = currentUser.pets || [];
+    petBoxEl.innerHTML = pets.map((p, idx) => `
+      <label class="pet-check-item">
+        <div class="flex-row" style="gap:8px;">
+          <input type="checkbox" value="${p.id}" ${idx === 0 ? "checked" : ""}>
+          <strong>${p.name}</strong>
+          <span style="font-size:0.78rem;color:var(--slate-500);">${p.type}</span>
+        </div>
+        ${AnimedicApp.renderGenderBadge(p.gender)}
+      </label>
+    `).join("");
+
+    petBoxEl.querySelectorAll("input[type='checkbox']").forEach(cb => {
+      cb.onchange = updateHotelTotal;
+    });
+
+    const tomorrow = new Date(Date.now() + 86400000);
+    const threeDays = new Date(Date.now() + 3 * 86400000);
+    document.getElementById("hotel-checkin").value = tomorrow.toISOString().split("T")[0];
+    document.getElementById("hotel-checkout").value = threeDays.toISOString().split("T")[0];
+    petErrEl.style.display = "none";
+    updateHotelTotal();
+    modal.classList.add("open");
+  }
 
   function getSelectedPets() {
     const checkedIds = Array.from(petBoxEl.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
@@ -150,37 +210,8 @@ if (currentUser) {
     if (count > 0) petErrEl.style.display = "none";
   }
 
-  grid.querySelectorAll(".book-hotel-btn").forEach(btn => {
-    btn.onclick = () => {
-      selectedHotel = ANIMEDIC_DATA.petHotels.find(h => h.id === btn.dataset.id);
-      document.getElementById("hotel-modal-title").textContent = selectedHotel.name;
-      document.getElementById("hotel-modal-sub").textContent = `${selectedHotel.type} | ${selectedHotel.location} (${selectedHotel.distanceKm} km from your location)`;
-
-      const pets = currentUser.pets || [];
-      petBoxEl.innerHTML = pets.map((p, idx) => `
-        <label class="pet-check-item">
-          <div class="flex-row" style="gap:8px;">
-            <input type="checkbox" value="${p.id}" ${idx === 0 ? "checked" : ""}>
-            <strong>${p.name}</strong>
-            <span style="font-size:0.78rem;color:var(--slate-500);">${p.type}</span>
-          </div>
-          ${AnimedicApp.renderGenderBadge(p.gender)}
-        </label>
-      `).join("");
-
-      petBoxEl.querySelectorAll("input[type='checkbox']").forEach(cb => {
-        cb.onchange = updateHotelTotal;
-      });
-
-      const tomorrow = new Date(Date.now() + 86400000);
-      const threeDays = new Date(Date.now() + 3 * 86400000);
-      document.getElementById("hotel-checkin").value = tomorrow.toISOString().split("T")[0];
-      document.getElementById("hotel-checkout").value = threeDays.toISOString().split("T")[0];
-      petErrEl.style.display = "none";
-      updateHotelTotal();
-      modal.classList.add("open");
-    };
-  });
+  hotelSortEl.onchange = renderHotels;
+  renderHotels();
 
   selectAllEl.onchange = () => {
     petBoxEl.querySelectorAll("input[type='checkbox']").forEach(cb => {

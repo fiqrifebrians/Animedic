@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Online Consultation | Animedic</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -26,7 +28,7 @@
   </div>
 </div>
 
-<div class="filter-bar" style="margin-top:0;">
+<div class="filter-bar" id="consult-filter-bar" style="margin-top:0;">
   <select id="consult-pet-filter" class="form-select">
     <option value="All">All Pet Types</option>
     <option value="Cat">Cat</option>
@@ -69,16 +71,19 @@
   </div>
 
   <div class="chat-box">
-    <div id="chat-header" style="padding:14px 18px;border-bottom:1px solid var(--slate-200);background:#FFFFFF;" class="flex-between">
-      <div class="flex-row" style="gap:6px;flex-wrap:nowrap;min-width:0;">
+    <div id="chat-header" style="padding:14px 16px;border-bottom:1px solid var(--slate-200);background:#FFFFFF;" class="flex-between">
+      <div class="flex-row" style="gap:8px;flex-wrap:nowrap;min-width:0;">
         <button type="button" class="chat-mobile-back" id="chat-mobile-back-btn" aria-label="Back to veterinarians"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg><span>Back</span></button>
-      <div style="min-width:0;">
-        <div id="active-vet-name" style="font-weight:700;font-size:0.96rem;">Select a veterinarian</div>
-        <div id="active-vet-meta" style="font-size:0.78rem;color:var(--slate-500);"></div>
-        <div id="active-pets-meta" style="font-size:0.74rem;color:var(--orange-primary);font-weight:600;margin-top:2px;"></div>
+        <div style="min-width:0;">
+          <div class="flex-row" style="gap:5px;flex-wrap:nowrap;">
+            <span id="active-vet-name" style="font-weight:700;font-size:0.96rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Select a veterinarian</span>
+            <span title="Verified Veterinarian" style="color:var(--green-ok);display:inline-flex;align-items:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+          </div>
+          <div id="active-vet-meta" style="font-size:0.78rem;color:var(--slate-500);"></div>
+          <div id="active-pets-meta" style="font-size:0.73rem;color:var(--orange-primary);font-weight:600;margin-top:2px;"></div>
+        </div>
       </div>
-      </div>
-      <span class="badge badge-green">Online Now</span>
+      <span class="chat-rating-pill" id="active-vet-rating"></span>
     </div>
 
     <div class="chat-messages" id="chat-messages"></div>
@@ -305,17 +310,22 @@ if (currentUser) {
     `).join("");
 
     const chatLayoutEl = document.getElementById("consult-chat-layout");
+    const filterBarEl = document.getElementById("consult-filter-bar");
     vetListEl.querySelectorAll("button").forEach(btn => {
       btn.onclick = () => {
         selectedVet = ANIMEDIC_DATA.vets.find(v => v.id === btn.dataset.vet);
         renderVetList();
         initChatSession();
         if (chatLayoutEl) chatLayoutEl.classList.add("show-chat");
+        if (filterBarEl) filterBarEl.classList.add("consult-filters-hidden");
       };
     });
     const backBtn = document.getElementById("chat-mobile-back-btn");
     if (backBtn) {
-      backBtn.onclick = () => { if (chatLayoutEl) chatLayoutEl.classList.remove("show-chat"); };
+      backBtn.onclick = () => {
+        if (chatLayoutEl) chatLayoutEl.classList.remove("show-chat");
+        if (filterBarEl) filterBarEl.classList.remove("consult-filters-hidden");
+      };
     }
   }
 
@@ -340,9 +350,9 @@ if (currentUser) {
   }
 
   function initChatSession() {
-    const hasPlan = AnimedicState.isMonthlyPlanActive();
     document.getElementById("active-vet-name").textContent = selectedVet.name;
-    document.getElementById("active-vet-meta").textContent = `${selectedVet.specialty} | Rating ${selectedVet.rating.toFixed(1)} | ${hasPlan ? "Covered by Monthly Pet Plan" : AnimedicApp.formatIDR(selectedVet.consultPrice)}`;
+    document.getElementById("active-vet-meta").textContent = selectedVet.specialty;
+    document.getElementById("active-vet-rating").innerHTML = `${AnimedicApp.ICONS.star}<span>${selectedVet.rating.toFixed(1)}</span>`;
     updateHeaderPets();
     const petNames = formatPetNames(getSelectedPets());
     messagesEl.innerHTML = "";

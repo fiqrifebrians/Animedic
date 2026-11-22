@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Regulated Pharmacy | Animedic</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -18,8 +20,16 @@
   <div class="section-header">
     <div>
       <h1 style="font-size:1.45rem;">Select a Pet Pharmacy</h1>
-      <p class="section-sub">Choose from 8 verified veterinary pharmacies near your location.</p>
+      <p class="section-sub">Choose from verified veterinary pharmacies near your location.</p>
     </div>
+    <select id="pharmacy-sort" class="form-select" style="width:auto;min-width:210px;" aria-label="Sort pharmacies">
+    <option value="distance-asc">Nearest First</option>
+    <option value="distance-desc">Farthest First</option>
+    <option value="price-asc">Price: Lowest to Highest</option>
+    <option value="price-desc">Price: Highest to Lowest</option>
+    <option value="rating-desc">Rating: Highest to Lowest</option>
+    <option value="rating-asc">Rating: Lowest to Highest</option>
+    </select>
   </div>
   <div class="grid-3" id="pharmacies-grid"></div>
 </div>
@@ -112,36 +122,53 @@ if (currentUser) {
   const drawer = document.getElementById("cart-drawer");
   const rxUnlocked = Boolean(currentUser.rxUnlocked);
 
-  // Render Step 1: 8 Pharmacies
-  pharmaciesGrid.innerHTML = ANIMEDIC_DATA.pharmacies.map(ph => `
-    <div class="card card-hover provider-card" style="cursor:pointer;" data-pharm="${ph.id}">
-      <div>
-        <div class="flex-between mb-2">
-          <span class="badge badge-green">${AnimedicApp.ICONS.shield} Verified</span>
-          <span class="badge badge-navy">${AnimedicApp.ICONS.star} ${ph.rating.toFixed(1)}</span>
-        </div>
-        <h3 style="font-size:1.05rem;margin-bottom:4px;">${ph.name}</h3>
-        <div class="provider-meta">
-          <span>${AnimedicApp.ICONS.pin} ${ph.location} (${ph.distanceKm} km from your location)</span>
-        </div>
-        <div style="font-size:0.8rem;color:var(--slate-500);margin-top:8px;">Est. delivery: ${ph.estDelivery}</div>
-      </div>
-      <div class="flex-between" style="border-top:1px solid var(--slate-100);padding-top:12px;">
-        <div>
-          <div style="font-size:0.72rem;color:var(--slate-500);">Delivery Fee</div>
-          <div class="price-tag" style="font-size:0.96rem;">${AnimedicApp.formatIDR(ph.deliveryFee)}</div>
-        </div>
-        <button type="button" class="btn btn-primary btn-sm">Browse Catalog</button>
-      </div>
-    </div>
-  `).join("");
+  const pharmacySortEl = document.getElementById("pharmacy-sort");
 
-  pharmaciesGrid.querySelectorAll("[data-pharm]").forEach(card => {
-    card.onclick = () => {
-      selectedPharmacy = ANIMEDIC_DATA.pharmacies.find(p => p.id === card.dataset.pharm);
-      openPharmacyCatalog();
-    };
-  });
+  function renderPharmacyDirectory() {
+    const sortVal = pharmacySortEl.value;
+    const list = [...ANIMEDIC_DATA.pharmacies].sort((a, b) => {
+      if (sortVal === "distance-asc") return a.distanceKm - b.distanceKm;
+      if (sortVal === "distance-desc") return b.distanceKm - a.distanceKm;
+      if (sortVal === "price-asc") return a.deliveryFee - b.deliveryFee;
+      if (sortVal === "price-desc") return b.deliveryFee - a.deliveryFee;
+      if (sortVal === "rating-desc") return b.rating - a.rating;
+      if (sortVal === "rating-asc") return a.rating - b.rating;
+      return 0;
+    });
+
+    pharmaciesGrid.innerHTML = list.map(ph => `
+      <div class="card card-hover provider-card" style="cursor:pointer;" data-pharm="${ph.id}">
+        <div>
+          <div class="flex-between mb-2">
+            <span class="badge badge-green">${AnimedicApp.ICONS.shield} Verified</span>
+            <span class="badge badge-navy">${AnimedicApp.ICONS.star} ${ph.rating.toFixed(1)}</span>
+          </div>
+          <h3 style="font-size:1.05rem;margin-bottom:4px;">${ph.name}</h3>
+          <div class="provider-meta">
+            <span>${AnimedicApp.ICONS.pin} ${ph.location} (${ph.distanceKm} km from your location)</span>
+          </div>
+          <div style="font-size:0.8rem;color:var(--slate-500);margin-top:8px;">Est. delivery: ${ph.estDelivery}</div>
+        </div>
+        <div class="flex-between" style="border-top:1px solid var(--slate-100);padding-top:12px;">
+          <div>
+            <div style="font-size:0.72rem;color:var(--slate-500);">Delivery Fee</div>
+            <div class="price-tag" style="font-size:0.96rem;">${AnimedicApp.formatIDR(ph.deliveryFee)}</div>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm">Browse Catalog</button>
+        </div>
+      </div>
+    `).join("");
+
+    pharmaciesGrid.querySelectorAll("[data-pharm]").forEach(card => {
+      card.onclick = () => {
+        selectedPharmacy = ANIMEDIC_DATA.pharmacies.find(p => p.id === card.dataset.pharm);
+        openPharmacyCatalog();
+      };
+    });
+  }
+
+  pharmacySortEl.onchange = renderPharmacyDirectory;
+  renderPharmacyDirectory();
 
   function openPharmacyCatalog() {
     document.getElementById("selected-pharmacy-title").textContent = selectedPharmacy.name;
