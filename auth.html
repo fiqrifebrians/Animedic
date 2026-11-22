@@ -31,7 +31,7 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="signin-password">Password</label>
-            <input type="password" id="signin-password" class="form-input" placeholder="Enter your password" required>
+            <div class="password-field-wrap"><input type="password" id="signin-password" class="form-input" placeholder="Enter your password" required><button type="button" class="pw-toggle-btn" data-target="signin-password" aria-label="Show password"></button></div>
           </div>
           <div class="form-error mb-2" id="signin-error"></div>
           <button type="submit" class="btn btn-primary btn-block">Sign In</button>
@@ -52,11 +52,11 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="signup-password">Password</label>
-            <input type="password" id="signup-password" class="form-input" placeholder="Create a password" required>
+            <div class="password-field-wrap"><input type="password" id="signup-password" class="form-input" placeholder="Create a password" required><button type="button" class="pw-toggle-btn" data-target="signup-password" aria-label="Show password"></button></div>
           </div>
           <div class="form-group">
             <label class="form-label" for="signup-confirm">Confirm Password</label>
-            <input type="password" id="signup-confirm" class="form-input" placeholder="Re-enter your password" required>
+            <div class="password-field-wrap"><input type="password" id="signup-confirm" class="form-input" placeholder="Re-enter your password" required><button type="button" class="pw-toggle-btn" data-target="signup-confirm" aria-label="Show password"></button></div>
           </div>
           <ul class="validation-list mb-2" id="signup-validation-list"></ul>
           <button type="submit" class="btn btn-primary btn-block">Create Account</button>

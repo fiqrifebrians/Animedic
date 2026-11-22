@@ -1467,3 +1467,116 @@ body {
     display: none !important;
   }
 }
+/* Password Input Wrapper & Crossed-Out Eye Toggle */
+.password-field-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.password-field-wrap .form-input {
+  padding-right: 44px;
+}
+.pw-toggle-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--slate-500);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.pw-toggle-btn:hover {
+  color: var(--navy-900);
+  background: var(--slate-100);
+}
+
+/* Static Location Map Container inside Active Demo Location Modal */
+#location-leaflet-map {
+  width: 100%;
+  height: 210px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--slate-200);
+  overflow: hidden;
+  margin-bottom: 14px;
+  background: #F1F5F9;
+  z-index: 1;
+}
+
+/* Global Currency / Price Single-Line Lock */
+.price, .price-value, .price-tag, .amount, .summary-value, .booking-price, .fee-value {
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Clean 2-Column Receipt & Stacked Summary Rows */
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.receipt-row:last-child {
+  margin-bottom: 0;
+}
+.receipt-left {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.receipt-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--navy-800);
+  line-height: 1.35;
+}
+.receipt-sub {
+  font-size: 0.76rem;
+  color: var(--slate-500);
+  margin-top: 2px;
+  line-height: 1.35;
+}
+.receipt-right {
+  flex-shrink: 0;
+  text-align: right;
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--navy-900);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Clean Stacked Booking & Card Metadata Lines */
+.stacked-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+.stacked-meta-primary {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--navy-900);
+  line-height: 1.35;
+}
+.stacked-meta-line {
+  font-size: 0.82rem;
+  color: var(--slate-600);
+  line-height: 1.35;
+}
+.stacked-meta-muted {
+  font-size: 0.78rem;
+  color: var(--slate-500);
+  line-height: 1.35;
+}

@@ -142,11 +142,17 @@ if (currentUser) {
   } else {
     bkEl.innerHTML = bookings.slice(0, 3).map(b => `
       <div style="padding:12px;border:1px solid var(--slate-200);border-radius:12px;margin-bottom:10px;">
-        <div class="flex-between">
-          <strong style="font-size:0.9rem;">${b.providerName}</strong>
+        <div class="flex-between mb-1" style="align-items:flex-start;">
+          <div class="stacked-meta">
+            <div class="stacked-meta-primary" style="font-size:0.9rem;">${b.serviceName}</div>
+            <div class="stacked-meta-line">${(b.petName || "").includes(",") ? "Pets" : "Pet"}: <strong>${b.petName}</strong></div>
+            <div class="stacked-meta-muted">${b.providerName}</div>
+          </div>
           <span class="badge ${b.status === "Completed" ? "badge-green" : (b.status === "Cancelled" ? "badge-red" : "badge-orange")}">${b.status}</span>
         </div>
-        <div style="font-size:0.8rem;color:var(--slate-500);margin-top:4px;">${b.serviceName} for ${b.petName} | ${AnimedicApp.formatIDR(b.totalAmount)}</div>
+        <div style="text-align:right;margin-top:4px;">
+          <strong class="price-value" style="font-size:0.86rem;color:var(--navy-900);">${AnimedicApp.formatIDR(b.totalAmount)}</strong>
+        </div>
       </div>
     `).join("");
   }

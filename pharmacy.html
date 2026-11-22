@@ -71,18 +71,18 @@
     <div style="border-top:1px solid var(--slate-200);padding-top:14px;margin-top:14px;font-size:0.86rem;">
       <div class="flex-between mb-1">
         <span style="color:var(--slate-600);">Subtotal</span>
-        <strong id="cart-subtotal">Rp 0</strong>
+        <strong class="summary-value" id="cart-subtotal">Rp&nbsp;0</strong>
       </div>
       <div class="flex-between mb-1">
         <span style="color:var(--slate-600);">Delivery Fee</span>
-        <div id="cart-delivery-fee">Rp 0</div>
+        <div class="fee-value" id="cart-delivery-fee">Rp&nbsp;0</div>
       </div>
       <div id="cart-plan-badge" style="display:none;margin-bottom:8px;">
         <span class="badge badge-orange">Monthly Pet Plan -15%</span>
       </div>
       <div class="flex-between mb-2" style="border-top:1px solid var(--slate-100);padding-top:8px;">
         <strong>Total Payment</strong>
-        <strong style="color:var(--orange-primary);font-size:1.1rem;" id="cart-total">Rp 0</strong>
+        <strong style="color:var(--orange-primary);font-size:1.1rem;" class="amount" id="cart-total">Rp&nbsp;0</strong>
       </div>
       <div class="form-group" style="margin-bottom:10px;">
         <label class="form-label" for="cart-pay-method" style="font-size:0.8rem;">Payment Method</label>
@@ -262,10 +262,10 @@ if (currentUser) {
 
     if (cart.length === 0) {
       listEl.innerHTML = '<p style="color:var(--slate-500);font-size:0.88rem;text-align:center;margin-top:40px;">Your pharmacy cart is empty.</p>';
-      document.getElementById("cart-subtotal").textContent = "Rp 0";
-      document.getElementById("cart-delivery-fee").textContent = "Rp 0";
+      document.getElementById("cart-subtotal").textContent = "Rp\u00A00";
+      document.getElementById("cart-delivery-fee").textContent = "Rp\u00A00";
       document.getElementById("cart-plan-badge").style.display = "none";
-      document.getElementById("cart-total").textContent = "Rp 0";
+      document.getElementById("cart-total").textContent = "Rp\u00A00";
       return;
     }
 

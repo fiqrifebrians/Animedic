@@ -240,12 +240,13 @@ if (currentUser) {
               <span class="badge ${badgeClass}">${b.status}</span>
             </div>
 
-            <div class="flex-between">
-              <div>
-                <h3 style="font-size:1.05rem;">${b.providerName}</h3>
-                <div style="font-size:0.84rem;color:var(--slate-600);">${b.serviceName} | Pet: <strong>${b.petName}</strong></div>
+            <div class="flex-between" style="align-items:flex-start;">
+              <div class="stacked-meta">
+                <div class="stacked-meta-primary">${b.serviceName}</div>
+                <div class="stacked-meta-line">${(b.petName || "").includes(",") ? "Pets" : "Pet"}: <strong>${b.petName}</strong></div>
+                <div class="stacked-meta-muted">Provider: ${b.providerName}</div>
               </div>
-              <div class="price-tag">${AnimedicApp.formatIDR(b.totalAmount)}</div>
+              <div class="price-tag booking-price">${AnimedicApp.formatIDR(b.totalAmount)}</div>
             </div>
 
             ${isCancelled ? `
@@ -348,11 +349,15 @@ if (currentUser) {
     } else {
       recEl.innerHTML = records.map(r => `
         <div class="card">
-          <div class="flex-between mb-1">
-            <strong>${r.petName} | ${r.service}</strong>
-            <span class="badge badge-green">Verified Clinical Note</span>
+          <div class="flex-between mb-2" style="align-items:flex-start;">
+            <div class="stacked-meta">
+              <div class="stacked-meta-primary">${r.service}</div>
+              <div class="stacked-meta-line">Pet: <strong>${r.petName}</strong></div>
+              <div class="stacked-meta-muted">Practitioner: ${r.providerName}</div>
+              <div class="stacked-meta-muted">Recorded: ${new Date(r.date).toLocaleString()}</div>
+            </div>
+            <span class="badge badge-green">Verified Note</span>
           </div>
-          <div style="font-size:0.8rem;color:var(--slate-500);margin-bottom:8px;">Practitioner: ${r.providerName} | Recorded: ${new Date(r.date).toLocaleString()}</div>
           <p style="font-size:0.86rem;color:var(--slate-700);">${r.notes}</p>
         </div>
       `).join("");

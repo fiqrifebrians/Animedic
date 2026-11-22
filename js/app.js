@@ -21,6 +21,8 @@ const AnimedicApp = {
     paperclip: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>',
     menu: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>',
     arrowLeft: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>',
+    eye: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>',
+    eyeOff: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>',
     cart: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>'
   },
 
@@ -67,8 +69,53 @@ const AnimedicApp = {
     });
   },
 
+  initPasswordToggles(root = document) {
+    root.querySelectorAll(".pw-toggle-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      const targetId = btn.dataset.target;
+      const input = document.getElementById(targetId);
+      if (!input) return;
+      btn.innerHTML = this.ICONS.eyeOff;
+      btn.setAttribute("aria-label", "Show password");
+      btn.addEventListener("click", () => {
+        const isHidden = input.type === "password";
+        input.type = isHidden ? "text" : "password";
+        btn.innerHTML = isHidden ? this.ICONS.eye : this.ICONS.eyeOff;
+        btn.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
+      });
+    });
+  },
+
+  _attachKeylessTiles(mapInstance) {
+    let fallbackAdded = false;
+    const carto = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      subdomains: "abcd",
+      maxZoom: 19
+    });
+    carto.on("tileerror", () => {
+      if (fallbackAdded) return;
+      fallbackAdded = true;
+      mapInstance.removeLayer(carto);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19
+      }).addTo(mapInstance);
+    });
+    carto.addTo(mapInstance);
+  },
+
+  _createPinIcon() {
+    return L.divIcon({
+      className: "animedic-map-pin",
+      html: '<svg width="32" height="32" viewBox="0 0 24 24" fill="#EA580C" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3" fill="#FFFFFF"/></svg>',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      tooltipAnchor: [0, -28]
+    });
+  },
+
   formatIDR(amount) {
-    return "Rp " + Math.round(amount).toLocaleString("id-ID");
+    return "Rp\u00A0" + Math.round(amount).toLocaleString("id-ID");
   },
 
   calculateTravelFee(distanceKm) {
@@ -113,6 +160,7 @@ const AnimedicApp = {
       window.location.replace("auth.html");
       return null;
     }
+    this.initPasswordToggles();
     return user;
   },
 
@@ -224,7 +272,10 @@ const AnimedicApp = {
     }
     const openLocModal = () => {
       const lm = document.getElementById("location-info-modal");
-      if (lm) lm.classList.add("open");
+      if (lm) {
+        lm.classList.add("open");
+        setTimeout(() => this._initStaticLocationMap(), 180);
+      }
     };
     const locBtn = document.getElementById("open-location-info-btn");
     if (locBtn) locBtn.addEventListener("click", openLocModal);
@@ -238,6 +289,7 @@ const AnimedicApp = {
       setTimeout(() => this.openDemoModal(), 180);
     }
 
+    this.initPasswordToggles();
     return user;
   },
 
@@ -288,11 +340,12 @@ const AnimedicApp = {
       <div class="modal-box">
         <button type="button" class="modal-close" id="close-loc-x" aria-label="Close">${this.ICONS.close}</button>
         <span class="badge badge-orange mb-2">Simulated Location</span>
-        <h2 style="font-size:1.28rem;margin-bottom:8px;">Active Demo Location</h2>
-        <p style="font-size:0.92rem;color:var(--navy-800);font-weight:600;margin-bottom:8px;">
+        <h2 style="font-size:1.28rem;margin-bottom:10px;">Active Demo Location</h2>
+        <div id="location-leaflet-map"></div>
+        <p style="font-size:0.9rem;color:var(--navy-800);font-weight:600;margin-bottom:6px;">
           ${ANIMEDIC_DATA.baseLocation.name}
         </p>
-        <p style="font-size:0.84rem;color:var(--slate-600);margin-bottom:18px;">
+        <p style="font-size:0.82rem;color:var(--slate-600);margin-bottom:18px;">
           Coordinates are anchored to Rawamangun (-6.1944, 106.8892) for prototype demonstration. Your real GPS location is not tracked.
         </p>
         <button type="button" class="btn btn-primary btn-block" id="close-loc-cta">Close</button>
@@ -305,6 +358,29 @@ const AnimedicApp = {
     modal.addEventListener("click", (e) => {
       if (e.target === modal) closeFn();
     });
+  },
+
+  _initStaticLocationMap() {
+    if (typeof L === "undefined") return;
+    const mapEl = document.getElementById("location-leaflet-map");
+    if (!mapEl) return;
+
+    if (!this._locationMap) {
+      this._locationMap = L.map(mapEl, {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([-6.1944, 106.8892], 14);
+
+      this._attachKeylessTiles(this._locationMap);
+
+      L.marker([-6.1944, 106.8892], { icon: this._createPinIcon() })
+        .addTo(this._locationMap)
+        .bindTooltip("Rawamangun, East Jakarta", { direction: "top", offset: [0, -4] })
+        .openTooltip();
+    }
+
+    this._locationMap.invalidateSize(true);
+    this._locationMap.setView([-6.1944, 106.8892], 14, { animate: false });
   },
 
   injectDemoModal() {
@@ -411,19 +487,9 @@ const AnimedicApp = {
         attributionControl: false
       }).setView([-2.5, 118.0], 4);
 
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-        maxZoom: 19
-      }).addTo(this._demoMap);
+      this._attachKeylessTiles(this._demoMap);
 
-      const pinIcon = L.divIcon({
-        className: "animedic-map-pin",
-        html: '<svg width="32" height="32" viewBox="0 0 24 24" fill="#EA580C" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3" fill="#FFFFFF"/></svg>',
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        tooltipAnchor: [0, -28]
-      });
-
-      this._demoMarker = L.marker([-6.1944, 106.8892], { icon: pinIcon })
+      this._demoMarker = L.marker([-6.1944, 106.8892], { icon: this._createPinIcon() })
         .addTo(this._demoMap)
         .bindTooltip("Rawamangun, East Jakarta", { direction: "top", offset: [0, -4] });
     }

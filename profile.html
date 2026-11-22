@@ -20,23 +20,27 @@
     <h1 style="font-size:1.45rem;">Account & Pet Profiles</h1>
     <p class="section-sub">Manage your account, household pets, and Monthly Pet Plan.</p>
   </div>
-  <button type="button" class="btn btn-outline" id="signout-btn" style="color:var(--red-err);border-color:#FECACA;">Sign Out</button>
 </div>
 
 <div class="grid-2 mb-3">
-  <div class="card">
-    <div class="flex-between mb-2">
-      <h2 class="section-title">Owner Details</h2>
-      <button type="button" class="btn btn-outline btn-sm" id="manage-account-open-btn">Manage Account</button>
-    </div>
-    <div class="flex-row" style="align-items:center;gap:14px;">
-      <div class="profile-avatar-lg" id="prof-avatar-preview"></div>
-      <div style="font-size:0.88rem;display:flex;flex-direction:column;gap:4px;min-width:0;">
-        <div><strong>Name:</strong> <span id="prof-name"></span></div>
-        <div><strong>Email:</strong> <span id="prof-email"></span></div>
-        <div><strong>Location:</strong> Rawamangun, East Jakarta, Indonesia</div>
-        <div><strong>Active Plan:</strong> <span class="badge badge-orange" id="prof-plan"></span></div>
+  <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;gap:16px;">
+    <div>
+      <div class="flex-between mb-2">
+        <h2 class="section-title">Owner Details</h2>
+        <button type="button" class="btn btn-outline btn-sm" id="manage-account-open-btn">Manage Account</button>
       </div>
+      <div class="flex-row" style="align-items:center;gap:14px;">
+        <div class="profile-avatar-lg" id="prof-avatar-preview"></div>
+        <div style="font-size:0.88rem;display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;">
+          <div><strong>Name:</strong> <span id="prof-name"></span></div>
+          <div style="overflow-wrap:anywhere;"><strong>Email:</strong> <span id="prof-email"></span></div>
+          <div><strong>Location:</strong> Rawamangun, East Jakarta, Indonesia</div>
+          <div><strong>Active Plan:</strong> <span class="badge badge-orange" id="prof-plan"></span></div>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--slate-100);padding-top:12px;display:flex;justify-content:flex-end;">
+      <button type="button" class="btn btn-danger-outline btn-sm" id="signout-btn">Sign Out</button>
     </div>
   </div>
 
@@ -55,7 +59,7 @@
     <div class="card" id="plan-payg">
       <span class="badge badge-navy mb-2">Flexible</span>
       <h3 style="font-size:1.15rem;">Pay-Per-Visit</h3>
-      <div class="price-tag mt-1 mb-2">Rp 0 <span style="font-size:0.8rem;font-weight:500;color:var(--slate-500);">/ month</span></div>
+      <div class="price-tag mt-1 mb-2">Rp&nbsp;0 <span style="font-size:0.8rem;font-weight:500;color:var(--slate-500);">/ month</span></div>
       <p style="font-size:0.84rem;color:var(--slate-600);margin-bottom:14px;">Pay only when you book a consultation, home visit vet, groomer, or boarding stay.</p>
       <div id="payg-status-area"></div>
     </div>
@@ -63,7 +67,7 @@
     <div class="card" id="plan-monthly" style="border-color:var(--orange-primary);background:var(--orange-soft);">
       <span class="badge badge-orange mb-2">Love Your Pets</span>
       <h3 style="font-size:1.15rem;">Monthly Pet Plan</h3>
-      <div class="price-tag mt-1 mb-2">Rp 229.000 <span style="font-size:0.8rem;font-weight:500;color:var(--slate-500);">/ month</span></div>
+      <div class="price-tag mt-1 mb-2">Rp&nbsp;229.000 <span style="font-size:0.8rem;font-weight:500;color:var(--slate-500);">/ month</span></div>
       <ul class="plan-benefits-list">
         <li>Unlimited 24/7 online consultation</li>
         <li>15% off home visit travel fees</li>
@@ -107,15 +111,15 @@
         <div id="pw-change-section" class="fade-view" style="display:none;opacity:0;margin-top:14px;">
           <div class="form-group">
             <label class="form-label" for="acct-curr-pass">Current Password</label>
-            <input type="password" id="acct-curr-pass" class="form-input" placeholder="Enter current password">
+            <div class="password-field-wrap"><input type="password" id="acct-curr-pass" class="form-input" placeholder="Enter current password"><button type="button" class="pw-toggle-btn" data-target="acct-curr-pass" aria-label="Show password"></button></div>
           </div>
           <div class="form-group">
             <label class="form-label" for="acct-new-pass">New Password</label>
-            <input type="password" id="acct-new-pass" class="form-input" placeholder="Enter new password">
+            <div class="password-field-wrap"><input type="password" id="acct-new-pass" class="form-input" placeholder="Enter new password"><button type="button" class="pw-toggle-btn" data-target="acct-new-pass" aria-label="Show password"></button></div>
           </div>
           <div class="form-group">
             <label class="form-label" for="acct-confirm-pass">Confirm New Password</label>
-            <input type="password" id="acct-confirm-pass" class="form-input" placeholder="Re-enter new password">
+            <div class="password-field-wrap"><input type="password" id="acct-confirm-pass" class="form-input" placeholder="Re-enter new password"><button type="button" class="pw-toggle-btn" data-target="acct-confirm-pass" aria-label="Show password"></button></div>
           </div>
           <button type="button" class="btn btn-outline btn-sm" id="cancel-pw-section-btn">Cancel Password Change</button>
         </div>
@@ -185,7 +189,7 @@
     <p style="font-size:0.86rem;color:var(--slate-600);margin-bottom:14px;">Activate instant app-wide benefits across consultations, home visits, and pharmacy deliveries.</p>
     <div style="background:var(--bg-page);border:1px solid var(--slate-200);border-radius:12px;padding:14px;margin-bottom:16px;" class="flex-between">
       <strong>Monthly Pet Plan</strong>
-      <strong style="color:var(--orange-primary);">Rp 229.000 / month</strong>
+      <strong style="color:var(--orange-primary);">Rp&nbsp;229.000 / month</strong>
     </div>
     <div class="form-group">
       <label class="form-label" for="plan-pay-method">Payment Method</label>

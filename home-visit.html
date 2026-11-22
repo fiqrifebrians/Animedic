@@ -125,20 +125,26 @@
       </div>
 
       <div style="background:var(--bg-page);border:1px solid var(--slate-200);border-radius:12px;padding:14px;margin-bottom:16px;font-size:0.85rem;">
-        <div class="flex-between" style="margin-bottom:6px;gap:8px;">
-          <span style="color:var(--slate-600);" id="hv-fee-base-label">Service Subtotal</span>
-          <strong id="hv-fee-base" style="white-space:nowrap;">Rp 0</strong>
+        <div class="receipt-row">
+          <div class="receipt-left">
+            <div class="receipt-title" id="hv-fee-base-title">Service Subtotal</div>
+            <div class="receipt-sub" id="hv-fee-base-calc"></div>
+          </div>
+          <div class="receipt-right summary-value" id="hv-fee-base">Rp&nbsp;0</div>
         </div>
-        <div class="flex-between" style="margin-bottom:6px;">
-          <span style="color:var(--slate-600);" id="hv-fee-travel-label">Distance Travel Fee</span>
-          <div id="hv-fee-travel">Rp 0</div>
+        <div class="receipt-row">
+          <div class="receipt-left">
+            <div class="receipt-title">Distance Travel Fee</div>
+            <div class="receipt-sub" id="hv-fee-travel-sub">Once per visit</div>
+          </div>
+          <div class="receipt-right fee-value" id="hv-fee-travel">Rp&nbsp;0</div>
         </div>
-        <div id="hv-plan-discount-row" style="display:none;margin-bottom:6px;">
+        <div id="hv-plan-discount-row" style="display:none;margin-bottom:8px;">
           <span class="badge badge-orange">Monthly Pet Plan -15%</span>
         </div>
-        <div class="flex-between" style="border-top:1px solid var(--slate-200);padding-top:8px;margin-top:6px;font-size:0.95rem;">
-          <strong>Total Payment</strong>
-          <strong style="color:var(--orange-primary);" id="hv-fee-total">Rp 0</strong>
+        <div class="receipt-row" style="border-top:1px solid var(--slate-200);padding-top:10px;margin-top:8px;">
+          <div class="receipt-left"><strong style="font-size:0.95rem;">Total Payment</strong></div>
+          <div class="receipt-right amount" style="color:var(--orange-primary);font-size:0.98rem;" id="hv-fee-total">Rp&nbsp;0</div>
         </div>
         <p style="font-size:0.75rem;color:var(--slate-500);margin-top:6px;">
           Payment protected until your service is complete.
@@ -355,9 +361,10 @@ if (currentUser) {
     const travelFee = hasPlan ? Math.round(rawTravelFee * 0.85) : rawTravelFee;
     const total = serviceSubtotal + travelFee;
 
-    document.getElementById("hv-fee-base-label").textContent = `${chosenSvc.name}: ${AnimedicApp.formatIDR(chosenSvc.price)} x ${petCount} pet${petCount === 1 ? "" : "s"}`;
+    document.getElementById("hv-fee-base-title").textContent = chosenSvc.name;
+    document.getElementById("hv-fee-base-calc").textContent = `${AnimedicApp.formatIDR(chosenSvc.price)} x ${petCount} pet${petCount === 1 ? "" : "s"}`;
     document.getElementById("hv-fee-base").textContent = AnimedicApp.formatIDR(serviceSubtotal);
-    document.getElementById("hv-fee-travel-label").textContent = `Distance Travel Fee (${selectedProvider.distanceKm} km, once per visit)`;
+    document.getElementById("hv-fee-travel-sub").textContent = `${selectedProvider.distanceKm} km from your location (once per visit)`;
     if (hasPlan) {
       document.getElementById("hv-fee-travel").innerHTML = `<span class="price-strike">${AnimedicApp.formatIDR(rawTravelFee)}</span><strong>${AnimedicApp.formatIDR(travelFee)}</strong>`;
       document.getElementById("hv-plan-discount-row").style.display = "block";
