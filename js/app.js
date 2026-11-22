@@ -89,19 +89,20 @@ const AnimedicApp = {
 
   _attachKeylessTiles(mapInstance) {
     let fallbackAdded = false;
-    const carto = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-      subdomains: "abcd",
-      maxZoom: 19
+    const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 18,
+      attribution: "Tiles &copy; Esri"
     });
-    carto.on("tileerror", () => {
+    esri.on("tileerror", () => {
       if (fallbackAdded) return;
       fallbackAdded = true;
-      mapInstance.removeLayer(carto);
+      mapInstance.removeLayer(esri);
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors"
       }).addTo(mapInstance);
     });
-    carto.addTo(mapInstance);
+    esri.addTo(mapInstance);
   },
 
   _createPinIcon() {

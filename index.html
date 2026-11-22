@@ -3,175 +3,305 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | Animedic</title>
+  <title>Animedic | Pet Care Delivered to Your Home</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="app-shell">
+  <!-- Minimalist Landing Page (Shown when logged out; hidden immediately when logged in) -->
+  <div class="landing-screen" id="landing-screen" style="display:none;">
+    <div class="landing-inner">
+      <div class="landing-brand landing-anim landing-d1">
+        <span class="brand-mark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/></svg>
+        </span>
+        <span>Animedic</span>
+      </div>
+
+      <!-- Layered Live-App Product UI Showcase -->
+      <div class="landing-anim landing-d2" style="width:100%;display:flex;justify-content:center;">
+        <div class="landing-showcase" aria-hidden="true">
+          <div class="showcase-glow"></div>
+
+          <!-- Top-Left Floating Accent Micro-Pill (Deep Navy) -->
+          <div class="showcase-pill showcase-pill-top">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>24/7 Vet Chat</span>
+          </div>
+
+          <!-- Center Anchor Card (Elevated Pure White Live Booking Card) -->
+          <div class="showcase-card">
+            <div class="showcase-card-top">
+              <div class="showcase-status">
+                <span class="showcase-pulse-dot"></span>
+                <span>Home Visit Active</span>
+              </div>
+              <span class="showcase-verified-pill">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                <span>Verified</span>
+              </span>
+            </div>
+
+            <div class="showcase-card-mid">
+              <div class="showcase-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
+              </div>
+              <div class="showcase-vet-info">
+                <div class="showcase-vet-name">Trusted Veterinarian</div>
+                <div class="showcase-vet-meta">General Care &middot; 1.2 km away</div>
+              </div>
+            </div>
+
+            <div class="showcase-card-bottom">
+              <div class="showcase-progress-row">
+                <span>Veterinarian on the way</span>
+                <strong>12 mins</strong>
+              </div>
+              <div class="showcase-progress-track">
+                <div class="showcase-progress-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom-Right Floating Accent Micro-Pill (Crisp White + Orange Border) -->
+          <div class="showcase-pill showcase-pill-bottom">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>Stress-Free At Home</span>
+          </div>
+        </div>
+      </div>
+
+      <h1 class="landing-title landing-anim landing-d3">Welcome to Animedic</h1>
+      <p class="landing-subtitle landing-anim landing-d4">
+        Making pet care effortless for you and stress-free for your beloved companions. Trusted veterinary, grooming, pharmacy, and boarding services delivered straight to your home.
+      </p>
+
+      <div class="landing-chips landing-anim landing-d5">
+        <span class="landing-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>24/7 Vet Chat</span>
+        </span>
+        <span class="landing-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
+          <span>Home Visit Care</span>
+        </span>
+        <span class="landing-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z"/><path d="m9 16 .348-.24c1.465-1.013 3.84-1.013 5.304 0L15 16"/><path d="M8 7h.01M16 7h.01M12 7h.01M12 11h.01M16 11h.01M8 11h.01"/></svg>
+          <span>Pet Hotel</span>
+        </span>
+        <span class="landing-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+          <span>Pet Pharmacy</span>
+        </span>
+      </div>
+
+      <div class="landing-cta-group landing-anim landing-d6">
+        <button type="button" class="landing-cta-btn" id="landing-join-btn">
+          <span>Join & Use Our Services</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+        <p class="landing-signin-link">
+          Already have an account? <a href="auth.html" id="landing-signin-link">Sign In</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Dashboard App Shell (Hidden by default before paint; shown only when logged in & onboarded) -->
+  <div class="app-shell" id="dashboard-shell" style="display:none;">
     <aside class="sidebar" id="app-sidebar"></aside>
     <div class="main-wrapper">
       <header class="top-header" id="app-header"></header>
       <main class="page-content">
-        
-<section class="hero-banner mb-3">
-  <h1 id="dash-greeting">Hello</h1>
-  <p>Trusted veterinary, grooming, pharmacy, and boarding care delivered to your door.</p>
-</section>
+        <section class="hero-banner mb-3">
+          <h1 id="dash-greeting">Hello</h1>
+          <p>Trusted veterinary, grooming, pharmacy, and boarding care delivered to your door.</p>
+        </section>
 
-<section class="mb-3">
-  <div class="section-header">
-    <div>
-      <h2 class="section-title">My Pets</h2>
-      <p class="section-sub">Your registered household pets and digital medical profiles.</p>
-    </div>
-    <a href="profile.html" class="btn btn-outline btn-sm">Manage Pets</a>
-  </div>
-  <div class="pets-strip" id="dash-pets-strip"></div>
-</section>
+        <section class="mb-3">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">My Pets</h2>
+              <p class="section-sub">Your registered household pets and digital medical profiles.</p>
+            </div>
+            <a href="profile.html" class="btn btn-outline btn-sm">Manage Pets</a>
+          </div>
+          <div class="pets-strip" id="dash-pets-strip"></div>
+        </section>
 
-<section class="mb-3">
-  <div class="section-header">
-    <div>
-      <h2 class="section-title">Core Pet Services</h2>
-      <p class="section-sub">All five Animedic pillars connected to your pet profiles.</p>
-    </div>
-  </div>
-  <div class="grid-5" id="dash-pillars"></div>
-</section>
+        <section class="mb-3">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Core Pet Services</h2>
+              <p class="section-sub">All five Animedic pillars connected to your pet profiles.</p>
+            </div>
+          </div>
+          <div class="grid-5" id="dash-pillars"></div>
+        </section>
 
-<section class="grid-2 mb-3">
-  <div class="card">
-    <div class="section-header">
-      <div>
-        <h2 class="section-title">Active Bookings</h2>
-        <p class="section-sub">Real-time status of your scheduled care.</p>
-      </div>
-      <a href="bookings.html" class="btn btn-soft btn-sm">View All</a>
-    </div>
-    <div id="dash-bookings-widget"></div>
-  </div>
+        <section class="grid-2 mb-3">
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">Active Bookings</h2>
+                <p class="section-sub">Real-time status of your scheduled care.</p>
+              </div>
+              <a href="bookings.html" class="btn btn-soft btn-sm">View All</a>
+            </div>
+            <div id="dash-bookings-widget"></div>
+          </div>
 
-  <div class="card">
-    <div class="section-header">
-      <div>
-        <h2 class="section-title">Nearest Verified Practitioners</h2>
-        <p class="section-sub">Sorted by distance from Rawamangun, East Jakarta, Indonesia.</p>
-      </div>
-      <a href="home-visit.html" class="btn btn-outline btn-sm">Browse All</a>
-    </div>
-    <div id="dash-nearby-list" style="display:flex;flex-direction:column;gap:10px;"></div>
-  </div>
-</section>
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">Nearest Verified Practitioners</h2>
+                <p class="section-sub">Sorted by distance from Rawamangun, East Jakarta, Indonesia.</p>
+              </div>
+              <a href="home-visit.html" class="btn btn-outline btn-sm">Browse All</a>
+            </div>
+            <div id="dash-nearby-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+          </div>
+        </section>
 
-<section class="card" style="background:var(--navy-900);color:#FFFFFF;border:none;">
-  <div class="grid-3">
-    <div>
-      <strong style="color:#FDBA74;font-size:0.9rem;">Verified Practitioners</strong>
-      <p style="font-size:0.8rem;color:#CBD5E1;margin-top:4px;">Every veterinarian and groomer is verified for safety and professional credentials.</p>
-    </div>
-    <div>
-      <strong style="color:#FDBA74;font-size:0.9rem;">Protected Payments</strong>
-      <p style="font-size:0.8rem;color:#CBD5E1;margin-top:4px;">Payment protected until your service is complete for complete peace of mind.</p>
-    </div>
-    <div>
-      <strong style="color:#FDBA74;font-size:0.9rem;">Private Health Records</strong>
-      <p style="font-size:0.8rem;color:#CBD5E1;margin-top:4px;">Owner addresses and digital pet health records are kept secure and private.</p>
-    </div>
-  </div>
-</section>
-
+        <section class="card" style="background:var(--navy-900);color:#FFFFFF;border:none;">
+          <div class="grid-3">
+            <div>
+              <strong style="color:#FDBA74;font-size:0.9rem;">Verified Practitioners</strong>
+              <p style="font-size:0.8rem;color:#CBD5E1;margin-top:4px;">Every veterinarian and groomer is verified for safety and professional credentials.</p>
+            </div>
+            <div>
+              <strong style="color:#FDBA74;font-size:0.9rem;">Protected Payments</strong>
+              <p style="font-size:0.8rem;color:#CBD5E1;margin-top:4px;">Payment protected until your service is complete for complete peace of mind.</p>
+            </div>
+            <div>
+              <strong style="color:#FDBA74;font-size:0.9rem;">Private Health Records</strong>
+              <p style="font-size:0.8rem;color:#CBD5E1;margin-top:4px;">Owner addresses and digital pet health records are kept secure and private.</p>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   </div>
-  <nav class="bottom-nav" id="app-bottom-nav"></nav>
+  <nav class="bottom-nav" id="app-bottom-nav" style="display:none;"></nav>
 
   <script src="js/data.js"></script>
   <script src="js/state.js"></script>
   <script src="js/app.js"></script>
   <script>
-    const currentUser = AnimedicApp.initShell("index");
-    
-if (currentUser) {
-  const firstName = currentUser.fullName.split(" ")[0];
-  document.getElementById("dash-greeting").textContent = "Hello, " + firstName;
+    (function () {
+      const user = AnimedicState.getCurrentUser();
+      const landingEl = document.getElementById("landing-screen");
+      const shellEl = document.getElementById("dashboard-shell");
+      const bottomNavEl = document.getElementById("app-bottom-nav");
 
-  const petsEl = document.getElementById("dash-pets-strip");
-  const pets = currentUser.pets || [];
-  petsEl.innerHTML = pets.map(p => `
-    <div class="pet-chip-card">
-      <div class="pet-avatar-circle" style="background:${p.gender === "Male" ? "var(--blue-soft)" : "var(--pink-soft)"};color:${p.gender === "Male" ? "var(--blue-male)" : "var(--pink-female)"};">
-        ${p.photo ? `<img src="${p.photo}" alt="${p.name}">` : AnimedicApp.getPetIcon(p.type)}
-      </div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-weight:700;font-size:0.95rem;">${p.name}</div>
-        <div style="font-size:0.78rem;color:var(--slate-500);margin:2px 0 6px;">${p.type}</div>
-        <div class="flex-row" style="gap:6px;">
-          ${AnimedicApp.renderGenderBadge(p.gender)}
-          <a href="bookings.html#records" style="font-size:0.74rem;font-weight:600;color:var(--orange-primary);">Health Record</a>
-        </div>
-      </div>
-    </div>
-  `).join("");
+      if (!user || !user.onboarded) {
+        // Show Landing Page cleanly with zero dashboard flash
+        landingEl.style.display = "flex";
+        document.title = "Welcome to Animedic";
 
-  const pillars = [
-    { title: "24/7 Online Consultation", desc: "Chat with licensed vets for immediate triage.", href: "consultation.html", icon: AnimedicApp.ICONS.chat },
-    { title: "Home Visit Vets", desc: "14 verified vets dispatched to your home.", href: "home-visit.html?tab=vets", icon: AnimedicApp.ICONS.stethoscope },
-    { title: "Home Visit Groomers", desc: "9 low-stress mobile groomers near you.", href: "home-visit.html?tab=groomers", icon: AnimedicApp.ICONS.scissors },
-    { title: "Integrated Pharmacy", desc: "8 nearby vet pharmacies with OTC and Rx care.", href: "pharmacy.html", icon: AnimedicApp.ICONS.pill },
-    { title: "Pet Boarding & Sitters", desc: "6 verified hotels with live slot availability.", href: "pet-hotel.html", icon: AnimedicApp.ICONS.hotel }
-  ];
-  document.getElementById("dash-pillars").innerHTML = pillars.map(p => `
-    <a href="${p.href}" class="pillar-card">
-      <div class="pillar-icon">${p.icon}</div>
-      <div class="pillar-title">${p.title}</div>
-      <div class="pillar-desc">${p.desc}</div>
-    </a>
-  `).join("");
+        const navigateWithFade = (targetUrl) => {
+          landingEl.classList.add("landing-fade-out");
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 230);
+        };
 
-  const bookings = AnimedicState.getBookings();
-  const bkEl = document.getElementById("dash-bookings-widget");
-  if (bookings.length === 0) {
-    bkEl.innerHTML = `
-      <div style="padding:18px;text-align:center;background:var(--bg-page);border-radius:12px;border:1px dashed var(--slate-200);">
-        <p style="font-size:0.86rem;color:var(--slate-600);margin-bottom:12px;">No active bookings yet. Book a home visit vet or groomer to get started.</p>
-        <a href="home-visit.html" class="btn btn-primary btn-sm">Book Home Visit</a>
-      </div>
-    `;
-  } else {
-    bkEl.innerHTML = bookings.slice(0, 3).map(b => `
-      <div style="padding:12px;border:1px solid var(--slate-200);border-radius:12px;margin-bottom:10px;">
-        <div class="flex-between mb-1" style="align-items:flex-start;">
-          <div class="stacked-meta">
-            <div class="stacked-meta-primary" style="font-size:0.9rem;">${b.serviceName}</div>
-            <div class="stacked-meta-line">${(b.petName || "").includes(",") ? "Pets" : "Pet"}: <strong>${b.petName}</strong></div>
-            <div class="stacked-meta-muted">${b.providerName}</div>
+        document.getElementById("landing-join-btn").addEventListener("click", () => {
+          navigateWithFade("auth.html?mode=signup");
+        });
+        document.getElementById("landing-signin-link").addEventListener("click", (e) => {
+          e.preventDefault();
+          navigateWithFade("auth.html");
+        });
+        return;
+      }
+
+      // Authenticated & onboarded user: show Dashboard
+      shellEl.style.display = "flex";
+      bottomNavEl.style.display = "";
+      document.title = "Dashboard | Animedic";
+
+      const currentUser = AnimedicApp.initShell("index");
+      if (!currentUser) return;
+
+      const firstName = currentUser.fullName.split(" ")[0];
+      document.getElementById("dash-greeting").textContent = "Hello, " + firstName;
+
+      const petsEl = document.getElementById("dash-pets-strip");
+      const pets = currentUser.pets || [];
+      petsEl.innerHTML = pets.map(p => `
+        <div class="pet-chip-card">
+          <div class="pet-avatar-circle" style="background:${p.gender === "Male" ? "var(--blue-soft)" : "var(--pink-soft)"};color:${p.gender === "Male" ? "var(--blue-male)" : "var(--pink-female)"};">
+            ${p.photo ? `<img src="${p.photo}" alt="${p.name}">` : AnimedicApp.getPetIcon(p.type)}
           </div>
-          <span class="badge ${b.status === "Completed" ? "badge-green" : (b.status === "Cancelled" ? "badge-red" : "badge-orange")}">${b.status}</span>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;font-size:0.95rem;">${p.name}</div>
+            <div style="font-size:0.78rem;color:var(--slate-500);margin:2px 0 6px;">${p.type}</div>
+            <div class="flex-row" style="gap:6px;">
+              ${AnimedicApp.renderGenderBadge(p.gender)}
+              <a href="bookings.html#records" style="font-size:0.74rem;font-weight:600;color:var(--orange-primary);">Health Record</a>
+            </div>
+          </div>
         </div>
-        <div style="text-align:right;margin-top:4px;">
-          <strong class="price-value" style="font-size:0.86rem;color:var(--navy-900);">${AnimedicApp.formatIDR(b.totalAmount)}</strong>
+      `).join("");
+
+      const pillars = [
+        { title: "24/7 Online Consultation", desc: "Chat with licensed vets for immediate triage.", href: "consultation.html", icon: AnimedicApp.ICONS.chat },
+        { title: "Home Visit Vets", desc: "14 verified vets dispatched to your home.", href: "home-visit.html?tab=vets", icon: AnimedicApp.ICONS.stethoscope },
+        { title: "Home Visit Groomers", desc: "9 low-stress mobile groomers near you.", href: "home-visit.html?tab=groomers", icon: AnimedicApp.ICONS.scissors },
+        { title: "Integrated Pharmacy", desc: "8 nearby vet pharmacies with OTC and Rx care.", href: "pharmacy.html", icon: AnimedicApp.ICONS.pill },
+        { title: "Pet Boarding & Sitters", desc: "6 verified hotels with live slot availability.", href: "pet-hotel.html", icon: AnimedicApp.ICONS.hotel }
+      ];
+      document.getElementById("dash-pillars").innerHTML = pillars.map(p => `
+        <a href="${p.href}" class="pillar-card">
+          <div class="pillar-icon">${p.icon}</div>
+          <div class="pillar-title">${p.title}</div>
+          <div class="pillar-desc">${p.desc}</div>
+        </a>
+      `).join("");
+
+      const bookings = AnimedicState.getBookings();
+      const bkEl = document.getElementById("dash-bookings-widget");
+      if (bookings.length === 0) {
+        bkEl.innerHTML = `
+          <div style="padding:18px;text-align:center;background:var(--bg-page);border-radius:12px;border:1px dashed var(--slate-200);">
+            <p style="font-size:0.86rem;color:var(--slate-600);margin-bottom:12px;">No active bookings yet. Book a home visit vet or groomer to get started.</p>
+            <a href="home-visit.html" class="btn btn-primary btn-sm">Book Home Visit</a>
+          </div>
+        `;
+      } else {
+        bkEl.innerHTML = bookings.slice(0, 3).map(b => `
+          <div style="padding:12px;border:1px solid var(--slate-200);border-radius:12px;margin-bottom:10px;">
+            <div class="flex-between mb-1" style="align-items:flex-start;">
+              <div class="stacked-meta">
+                <div class="stacked-meta-primary" style="font-size:0.9rem;">${b.serviceName}</div>
+                <div class="stacked-meta-line">${(b.petName || "").includes(",") ? "Pets" : "Pet"}: <strong>${b.petName}</strong></div>
+                <div class="stacked-meta-muted">${b.providerName}</div>
+              </div>
+              <span class="badge ${b.status === "Completed" ? "badge-green" : (b.status === "Cancelled" ? "badge-red" : "badge-orange")}">${b.status}</span>
+            </div>
+            <div style="text-align:right;margin-top:4px;">
+              <strong class="price-value" style="font-size:0.86rem;color:var(--navy-900);">${AnimedicApp.formatIDR(b.totalAmount)}</strong>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      const nearest = [...ANIMEDIC_DATA.vets].sort((a, b) => a.distanceKm - b.distanceKm).slice(0, 3);
+      document.getElementById("dash-nearby-list").innerHTML = nearest.map(v => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--slate-200);border-radius:12px;">
+          <div>
+            <div style="font-weight:700;font-size:0.88rem;">${v.name}</div>
+            <div style="font-size:0.78rem;color:var(--slate-500);">${v.specialty} | ${v.location} (${v.distanceKm} km)</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="price-value" style="font-weight:700;font-size:0.82rem;">Starting from ${AnimedicApp.formatIDR(Math.round(v.homeVisitPrice * 0.72 / 5000) * 5000)}</div>
+            <a href="home-visit.html?tab=vets" style="font-size:0.76rem;color:var(--orange-primary);font-weight:600;">Book</a>
+          </div>
         </div>
-      </div>
-    `).join("");
-  }
-
-  const nearest = [...ANIMEDIC_DATA.vets].sort((a, b) => a.distanceKm - b.distanceKm).slice(0, 3);
-  document.getElementById("dash-nearby-list").innerHTML = nearest.map(v => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--slate-200);border-radius:12px;">
-      <div>
-        <div style="font-weight:700;font-size:0.88rem;">${v.name}</div>
-        <div style="font-size:0.78rem;color:var(--slate-500);">${v.specialty} | ${v.location} (${v.distanceKm} km)</div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-weight:700;font-size:0.82rem;">Starting from ${AnimedicApp.formatIDR(Math.round(v.homeVisitPrice * 0.72 / 5000) * 5000)}</div>
-        <a href="home-visit.html?tab=vets" style="font-size:0.76rem;color:var(--orange-primary);font-weight:600;">Book</a>
-      </div>
-    </div>
-  `).join("");
-}
-
+      `).join("");
+    })();
   </script>
 </body>
 </html>

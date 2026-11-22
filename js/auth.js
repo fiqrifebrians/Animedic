@@ -37,6 +37,14 @@
     }, 220);
   }
 
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("mode") === "signup") {
+    signinForm.style.display = "none";
+    signupForm.style.display = "block";
+    authTitle.textContent = "Create your Animedic account";
+    authSubtitle.textContent = "Sign up to manage your pets and book verified home visit care.";
+  }
+
   document.getElementById("switch-to-signup").addEventListener("click", (e) => {
     e.preventDefault();
     signinForm.style.display = "none";
