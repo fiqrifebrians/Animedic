@@ -167,9 +167,9 @@ if (currentUser) {
 
   const banner = document.getElementById("rx-status-banner");
   if (rxUnlocked) {
-    banner.innerHTML = `<div class="notice-banner notice-green"><div><strong>Prescription Access Unlocked:</strong> Your completed Home-Visit Vet examination has verified prescription eligibility for Rx items.</div></div>`;
+    banner.innerHTML = `<div class="notice-banner notice-green"><div><strong>Prescription Access Unlocked:</strong> Your completed Home Visit Vet examination has verified prescription eligibility for Rx items.</div></div>`;
   } else {
-    banner.innerHTML = `<div class="notice-banner notice-orange"><div><strong>Regulatory Prescription Compliance:</strong> OTC items and therapeutic diets can be ordered immediately. Prescription (Rx) medications automatically unlock once you complete a Home-Visit Vet booking in <a href="bookings.html" style="text-decoration:underline;font-weight:700;">My Bookings</a>.</div></div>`;
+    banner.innerHTML = `<div class="notice-banner notice-orange"><div><strong>Regulatory Prescription Compliance:</strong> OTC items and therapeutic diets can be ordered immediately. Prescription (Rx) medications automatically unlock once you complete a Home Visit Vet booking in <a href="bookings.html" style="text-decoration:underline;font-weight:700;">My Bookings</a>.</div></div>`;
   }
 
   function updateCartBadge() {

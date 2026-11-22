@@ -108,15 +108,15 @@ if (currentUser) {
   if (window.location.hash === "#records") switchBkTab("records");
 
   function getStepDefs(type) {
-    if (type === "Home-Visit Vet") {
+    if (type === "Home Visit Vet" || type === "Home-Visit Vet") {
       return [
         { active: "Payment successful", done: "Payment successful" },
         { active: "Waiting for the veterinarian to confirm", done: "Booking confirmed" },
         { active: "Veterinarian is on the way", done: "Veterinarian arrived" },
-        { active: "Your pet is currently being treated", done: "Home-visit complete" }
+        { active: "Your pet is currently being treated", done: "Home visit complete" }
       ];
     }
-    if (type === "Home-Visit Groomer") {
+    if (type === "Home Visit Groomer" || type === "Home-Visit Groomer") {
       return [
         { active: "Payment successful", done: "Payment successful" },
         { active: "Waiting for the groomer to confirm", done: "Booking confirmed" },
@@ -211,8 +211,8 @@ if (currentUser) {
     if (bookings.length === 0) {
       listEl.innerHTML = `
         <div class="card" style="text-align:center;padding:32px;">
-          <p style="color:var(--slate-600);margin-bottom:14px;">You have no bookings yet. Book a Home-Visit Vet, Groomer, or Pet Hotel to track your appointment here.</p>
-          <a href="home-visit.html" class="btn btn-primary">Explore Home-Visit Services</a>
+          <p style="color:var(--slate-600);margin-bottom:14px;">You have no bookings yet. Book a Home Visit Vet, Groomer, or Pet Hotel to track your appointment here.</p>
+          <a href="home-visit.html" class="btn btn-primary">Explore Home Visit Services</a>
         </div>
       `;
     } else {
@@ -306,7 +306,7 @@ if (currentUser) {
       listEl.querySelectorAll(".advance-step-btn").forEach(btn => {
         btn.onclick = () => {
           const updated = AnimedicState.advanceBookingStep(btn.dataset.id);
-          if (updated && updated.status === "Completed" && updated.type === "Home-Visit Vet") {
+          if (updated && updated.status === "Completed" && updated.type === "Home Visit Vet") {
             AnimedicApp.showToast("Visit completed, medical record added, and Rx Pharmacy unlocked.");
           } else if (updated && updated.status === "Completed") {
             AnimedicApp.showToast("Service completed.");
@@ -340,7 +340,7 @@ if (currentUser) {
     if (records.length === 0) {
       recEl.innerHTML = `
         <div class="card" style="color:var(--slate-500);font-size:0.88rem;">
-          No clinical visit records yet. Complete a Home-Visit Vet booking to automatically generate a timestamped medical record.
+          No clinical visit records yet. Complete a Home Visit Vet booking to automatically generate a timestamped medical record.
         </div>
       `;
     } else {

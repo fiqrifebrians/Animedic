@@ -238,14 +238,14 @@ const AnimedicState = {
     });
     this._write(STATE_KEYS.BOOKINGS, updated);
 
-    if (target && target.status === "Completed" && target.type === "Home-Visit Vet") {
+    if (target && target.status === "Completed" && (target.type === "Home Visit Vet" || target.type === "Home-Visit Vet")) {
       this.unlockRx();
       this.addMedicalRecord({
         petId: target.petId,
         petName: target.petName,
         providerName: target.providerName,
         service: target.serviceName,
-        notes: "Physical home-visit examination completed. Vital signs stable, preventive guidance provided, and digital prescription clearance activated in Animedic Pharmacy."
+        notes: "Physical home visit examination completed. Vital signs stable, preventive guidance provided, and digital prescription clearance activated in Animedic Pharmacy."
       });
     }
     return target;

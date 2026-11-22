@@ -47,8 +47,9 @@
   </select>
 </div>
 
-<div class="chat-layout">
-  <div class="card" style="height:fit-content;">
+<div class="chat-viewport">
+<div class="chat-layout" id="consult-chat-layout">
+  <div class="card chat-list-panel" style="height:fit-content;">
     <div class="form-group">
       <div class="flex-between">
         <label class="form-label" style="margin-bottom:0;">Select Your Pets</label>
@@ -69,10 +70,13 @@
 
   <div class="chat-box">
     <div id="chat-header" style="padding:14px 18px;border-bottom:1px solid var(--slate-200);background:#FFFFFF;" class="flex-between">
-      <div>
+      <div class="flex-row" style="gap:6px;flex-wrap:nowrap;min-width:0;">
+        <button type="button" class="chat-mobile-back" id="chat-mobile-back-btn" aria-label="Back to veterinarians"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg><span>Back</span></button>
+      <div style="min-width:0;">
         <div id="active-vet-name" style="font-weight:700;font-size:0.96rem;">Select a veterinarian</div>
         <div id="active-vet-meta" style="font-size:0.78rem;color:var(--slate-500);"></div>
         <div id="active-pets-meta" style="font-size:0.74rem;color:var(--orange-primary);font-weight:600;margin-top:2px;"></div>
+      </div>
       </div>
       <span class="badge badge-green">Online Now</span>
     </div>
@@ -113,6 +117,7 @@
       </form>
     </div>
   </div>
+</div>
 </div>
 
 <!-- Live Camera Capture Modal -->
@@ -198,7 +203,7 @@ if (currentUser) {
   let pendingMedia = null; // { type: 'file'|'dataUrl', file?, dataUrl?, name }
   let activeStream = null;
 
-  const LIMIT_REPLY = "Thank you for sharing these details. Please monitor hydration and energy levels closely. For an accurate physical diagnosis, I recommend scheduling a stress-free home-visit examination.";
+  const LIMIT_REPLY = "Thank you for sharing these details. Please monitor hydration and energy levels closely. For an accurate physical diagnosis, I recommend scheduling a stress-free home visit examination.";
 
   function renderPetCheckboxes() {
     petBoxEl.innerHTML = pets.map((p, idx) => `
@@ -299,13 +304,19 @@ if (currentUser) {
       </button>
     `).join("");
 
+    const chatLayoutEl = document.getElementById("consult-chat-layout");
     vetListEl.querySelectorAll("button").forEach(btn => {
       btn.onclick = () => {
         selectedVet = ANIMEDIC_DATA.vets.find(v => v.id === btn.dataset.vet);
         renderVetList();
         initChatSession();
+        if (chatLayoutEl) chatLayoutEl.classList.add("show-chat");
       };
     });
+    const backBtn = document.getElementById("chat-mobile-back-btn");
+    if (backBtn) {
+      backBtn.onclick = () => { if (chatLayoutEl) chatLayoutEl.classList.remove("show-chat"); };
+    }
   }
 
   function updateChatLockState() {
@@ -345,39 +356,39 @@ if (currentUser) {
     const mediaNote = hasMedia ? `Thank you for sharing the photo/video of ${petNames}. I have reviewed it carefully. ` : "";
 
     if (lower.includes("vomit") || lower.includes("throw up")) {
-      return mediaNote + `Frequent vomiting in ${petNames} can signal dietary indiscretion or gastritis. Pause solid food for 4 to 6 hours while keeping fresh water available in small sips. If vomiting continues or blood appears, book a home-visit examination right away.`;
+      return mediaNote + `Frequent vomiting in ${petNames} can signal dietary indiscretion or gastritis. Pause solid food for 4 to 6 hours while keeping fresh water available in small sips. If vomiting continues or blood appears, book a home visit examination right away.`;
     }
     if (lower.includes("diarrhea") || lower.includes("loose stool") || lower.includes("poop")) {
-      return mediaNote + `Diarrhea can quickly dehydrate ${petNames}. Offer fresh water and a bland, easily digestible diet. A probiotic paste from our pharmacy can support gut recovery, and a home-visit vet should evaluate ${petNames} if it lasts over 24 hours.`;
+      return mediaNote + `Diarrhea can quickly dehydrate ${petNames}. Offer fresh water and a bland, easily digestible diet. A probiotic paste from our pharmacy can support gut recovery, and a home visit vet should evaluate ${petNames} if it lasts over 24 hours.`;
     }
     if (lower.includes("eat") || lower.includes("appetite") || lower.includes("food")) {
-      return mediaNote + `Reduced appetite in ${petNames} often relates to mild digestive upset, dental sensitivity, or stress. Try offering a small portion of warm wet food and monitor water intake. If more than two meals are skipped, schedule a home-visit check-up.`;
+      return mediaNote + `Reduced appetite in ${petNames} often relates to mild digestive upset, dental sensitivity, or stress. Try offering a small portion of warm wet food and monitor water intake. If more than two meals are skipped, schedule a home visit check-up.`;
     }
     if (lower.includes("rash") || lower.includes("itch") || lower.includes("skin") || lower.includes("flea") || lower.includes("scratch")) {
-      return mediaNote + `Skin irritation or itching in ${petNames} commonly stems from fleas, allergies, or fungal spots. Avoid applying human ointments and keep the area clean. You can browse OTC flea care in our pharmacy or book a home-visit dermatology check.`;
+      return mediaNote + `Skin irritation or itching in ${petNames} commonly stems from fleas, allergies, or fungal spots. Avoid applying human ointments and keep the area clean. You can browse OTC flea care in our pharmacy or book a home visit dermatology check.`;
     }
     if (lower.includes("ear") || lower.includes("head shak")) {
-      return mediaNote + `Ear scratching or head shaking can indicate ear mites or a mild ear infection. Avoid inserting cotton swabs deep into the ear canal. A gentle veterinary ear cleanser helps with routine wax, while persistent odor needs a home-visit check.`;
+      return mediaNote + `Ear scratching or head shaking can indicate ear mites or a mild ear infection. Avoid inserting cotton swabs deep into the ear canal. A gentle veterinary ear cleanser helps with routine wax, while persistent odor needs a home visit check.`;
     }
     if (lower.includes("limp") || lower.includes("leg") || lower.includes("paw") || lower.includes("walk")) {
-      return mediaNote + `Limping suggests a sprain, paw pad injury, or joint discomfort. Keep ${petNames} resting in a quiet area and inspect the paw pads gently for thorns or swelling. If weight cannot be borne, book a home-visit vet exam.`;
+      return mediaNote + `Limping suggests a sprain, paw pad injury, or joint discomfort. Keep ${petNames} resting in a quiet area and inspect the paw pads gently for thorns or swelling. If weight cannot be borne, book a home visit vet exam.`;
     }
     if (lower.includes("cough") || lower.includes("sneez") || lower.includes("breath")) {
-      return mediaNote + `Respiratory signs like coughing or sneezing in ${petNames} should be monitored closely. Keep the room well-ventilated and dust-free. If breathing looks labored or noisy, schedule an urgent home-visit examination.`;
+      return mediaNote + `Respiratory signs like coughing or sneezing in ${petNames} should be monitored closely. Keep the room well-ventilated and dust-free. If breathing looks labored or noisy, schedule an urgent home visit examination.`;
     }
     if (lower.includes("eye") || lower.includes("tear") || lower.includes("discharge")) {
-      return mediaNote + `Eye discharge or squinting in ${petNames} may be caused by dust irritation or conjunctivitis. Gently wipe the outer corner with clean damp gauze and avoid human eye drops. Book a home-visit exam if redness worsens.`;
+      return mediaNote + `Eye discharge or squinting in ${petNames} may be caused by dust irritation or conjunctivitis. Gently wipe the outer corner with clean damp gauze and avoid human eye drops. Book a home visit exam if redness worsens.`;
     }
     if (lower.includes("fever") || lower.includes("hot") || lower.includes("letharg") || lower.includes("tired") || lower.includes("weak")) {
-      return mediaNote + `Lethargy or warmth can indicate an underlying infection or fever. Keep ${petNames} comfortable, hydrated, and resting. Because fever requires a physical temperature check, I recommend booking a home-visit veterinarian today.`;
+      return mediaNote + `Lethargy or warmth can indicate an underlying infection or fever. Keep ${petNames} comfortable, hydrated, and resting. Because fever requires a physical temperature check, I recommend booking a home visit veterinarian today.`;
     }
     if (lower.includes("vaccin")) {
       return mediaNote + `Core annual vaccinations keep ${petNames} protected against common urban infections. Our veterinarians can administer vaccines comfortably at home to avoid clinic travel stress.`;
     }
     if (lower.includes("wound") || lower.includes("bleed") || lower.includes("injur")) {
-      return mediaNote + `For minor surface wounds on ${petNames}, apply gentle pressure with clean gauze and prevent licking. Deep or persistent bleeding requires a prompt physical home-visit assessment.`;
+      return mediaNote + `For minor surface wounds on ${petNames}, apply gentle pressure with clean gauze and prevent licking. Deep or persistent bleeding requires a prompt physical home visit assessment.`;
     }
-    return mediaNote + `I have noted your update regarding ${petNames}. Keep ${petNames} calm, hydrated, and comfortable while watching for any changes in appetite or energy. Feel free to share how long this has been happening or book a home-visit vet for a full physical check.`;
+    return mediaNote + `I have noted your update regarding ${petNames}. Keep ${petNames} calm, hydrated, and comfortable while watching for any changes in appetite or energy. Feel free to share how long this has been happening or book a home visit vet for a full physical check.`;
   }
 
   function handleSend(text, media) {
@@ -414,7 +425,7 @@ if (currentUser) {
       appendMessage("vet", `
         <div>${replyText}</div>
         <div class="flex-row mt-2" style="gap:8px;">
-          <a href="home-visit.html?tab=vets" class="btn btn-primary btn-sm">Book Home-Visit Vet</a>
+          <a href="home-visit.html?tab=vets" class="btn btn-primary btn-sm">Book Home Visit Vet</a>
           <a href="pharmacy.html" class="btn btn-outline btn-sm">Browse Pharmacy</a>
         </div>
       `);

@@ -100,7 +100,7 @@ if (currentUser) {
   petsEl.innerHTML = pets.map(p => `
     <div class="pet-chip-card">
       <div class="pet-avatar-circle" style="background:${p.gender === "Male" ? "var(--blue-soft)" : "var(--pink-soft)"};color:${p.gender === "Male" ? "var(--blue-male)" : "var(--pink-female)"};">
-        ${p.photo ? `<img src="${p.photo}" alt="${p.name}">` : AnimedicApp.ICONS.paw}
+        ${p.photo ? `<img src="${p.photo}" alt="${p.name}">` : AnimedicApp.getPetIcon(p.type)}
       </div>
       <div style="flex:1;min-width:0;">
         <div style="font-weight:700;font-size:0.95rem;">${p.name}</div>
@@ -115,8 +115,8 @@ if (currentUser) {
 
   const pillars = [
     { title: "24/7 Online Consultation", desc: "Chat with licensed vets for immediate triage.", href: "consultation.html", icon: AnimedicApp.ICONS.chat },
-    { title: "Home-Visit Vets", desc: "14 verified vets dispatched to your home.", href: "home-visit.html?tab=vets", icon: AnimedicApp.ICONS.stethoscope },
-    { title: "Home-Visit Groomers", desc: "9 low-stress mobile groomers near you.", href: "home-visit.html?tab=groomers", icon: AnimedicApp.ICONS.scissors },
+    { title: "Home Visit Vets", desc: "14 verified vets dispatched to your home.", href: "home-visit.html?tab=vets", icon: AnimedicApp.ICONS.stethoscope },
+    { title: "Home Visit Groomers", desc: "9 low-stress mobile groomers near you.", href: "home-visit.html?tab=groomers", icon: AnimedicApp.ICONS.scissors },
     { title: "Integrated Pharmacy", desc: "8 nearby vet pharmacies with OTC and Rx care.", href: "pharmacy.html", icon: AnimedicApp.ICONS.pill },
     { title: "Pet Boarding & Sitters", desc: "6 verified hotels with live slot availability.", href: "pet-hotel.html", icon: AnimedicApp.ICONS.hotel }
   ];
@@ -133,8 +133,8 @@ if (currentUser) {
   if (bookings.length === 0) {
     bkEl.innerHTML = `
       <div style="padding:18px;text-align:center;background:var(--bg-page);border-radius:12px;border:1px dashed var(--slate-200);">
-        <p style="font-size:0.86rem;color:var(--slate-600);margin-bottom:12px;">No active bookings yet. Book a home-visit vet or groomer to get started.</p>
-        <a href="home-visit.html" class="btn btn-primary btn-sm">Book Home-Visit</a>
+        <p style="font-size:0.86rem;color:var(--slate-600);margin-bottom:12px;">No active bookings yet. Book a home visit vet or groomer to get started.</p>
+        <a href="home-visit.html" class="btn btn-primary btn-sm">Book Home Visit</a>
       </div>
     `;
   } else {

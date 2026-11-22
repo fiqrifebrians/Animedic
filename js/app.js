@@ -19,7 +19,22 @@ const AnimedicApp = {
     male: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="14" r="5"/><path d="M19 5l-5.4 5.4"/><path d="M15 5h4v4"/></svg>',
     female: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="M12 14v7"/><path d="M9 18h6"/></svg>',
     paperclip: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>',
+    menu: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>',
+    arrowLeft: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>',
     cart: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>'
+  },
+
+  PET_TYPE_SVGS: {
+    Cat: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.07 1 2.24 1 3.44C21 17.9 16.97 21 12 21s-9-3.1-9-7.56c0-1.25.5-2.4 1-3.44 0 0-1.89-6.42-.5-7 1.39-.58 4.72.23 6.5 2.23A9.04 9.04 0 0 1 12 5Z"/><path d="M8 14v.5"/><path d="M16 14v.5"/><path d="M11.25 16.25h1.5L12 17l-.75-.75Z"/></svg>',
+    Dog: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.172C10 3.782 8.423 2.679 6.5 3c-2.823.47-4.113 6.006-4 7 .08.703 1.725 1.722 3.656 1 1.261-.472 1.96-1.45 2.344-2.5"/><path d="M14.267 5.172c0-1.39 1.577-2.493 3.5-2.172 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.855-1.45-2.239-2.5"/><path d="M8 14v.5"/><path d="M16 14v.5"/><path d="M11.25 16.25h1.5L12 17l-.75-.75Z"/><path d="M4.42 11.247A13.152 13.152 0 0 0 4 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444c0-1.061-.162-2.2-.493-3.309m-9.243-6.082A8.801 8.801 0 0 1 12 5c.78 0 1.5.108 2.161.306"/></svg>',
+    Rabbit: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 16a3 3 0 0 1 2.24 5"/><path d="M18 12h.01"/><path d="M18 21h-8a4 4 0 0 1-4-4 7 7 0 0 1 7-7h.2L9.6 6.4a1 1 0 1 1 2.8-2.8L15.8 7h.2c3.3 0 6 2.7 6 6v1a2 2 0 0 1-2 2h-1a3 3 0 0 0-3 3"/><path d="M20 8.54V4a2 2 0 1 0-4 0v3"/><path d="M7.612 12.524a3 3 0 1 0-1.6 4.3"/></svg>',
+    Hamster: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="7" r="2.5"/><path d="M5 13a7 7 0 0 1 14 0c0 4-3 7-7 7s-7-3-7-7Z"/><path d="M9.5 13h.01"/><path d="M14.5 13h.01"/><path d="M11 16h2"/></svg>',
+    Bird: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h.01"/><path d="M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.3L2 20"/><path d="m20 7 2 .5-2 .5"/><path d="M10 18v3"/><path d="M14 17.75V21"/></svg>',
+    Other: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/></svg>'
+  },
+
+  getPetIcon(type) {
+    return this.PET_TYPE_SVGS[type] || this.PET_TYPE_SVGS.Other;
   },
 
   compressImage(file, maxDim = 256) {
@@ -115,10 +130,10 @@ const AnimedicApp = {
     const navItems = [
       { id: "index", href: "index.html", label: "Dashboard", icon: this.ICONS.home },
       { id: "consultation", href: "consultation.html", label: "Consultation", icon: this.ICONS.chat },
-      { id: "home-visit", href: "home-visit.html", label: "Home-Visit", icon: this.ICONS.stethoscope },
+      { id: "home-visit", href: "home-visit.html", label: "Home Visit", icon: this.ICONS.stethoscope },
       { id: "pet-hotel", href: "pet-hotel.html", label: "Pet Hotel", icon: this.ICONS.hotel },
       { id: "pharmacy", href: "pharmacy.html", label: "Pharmacy", icon: this.ICONS.pill },
-      { id: "bookings", href: "bookings.html", label: "Bookings", icon: this.ICONS.calendar },
+      { id: "bookings", href: "bookings.html", label: "My Bookings", icon: this.ICONS.calendar },
       { id: "profile", href: "profile.html", label: "Profile", icon: this.ICONS.user }
     ];
 
@@ -151,19 +166,22 @@ const AnimedicApp = {
     if (headerEl) {
       headerEl.innerHTML = `
         <div class="header-left">
+          <button type="button" class="mobile-menu-btn" id="open-mobile-menu-btn" aria-label="Open menu">
+            ${this.ICONS.menu}
+          </button>
           <a href="index.html" class="mobile-brand">
             <span class="brand-mark" style="width:30px;height:30px;">${this.ICONS.paw}</span>
             <span>Animedic</span>
           </a>
-          <div class="location-pill" title="Simulated GPS Anchor">
+          <button type="button" class="location-pill" id="open-location-info-btn" title="Simulated Location">
             ${this.ICONS.pin}
-            <span>${ANIMEDIC_DATA.baseLocation.name}</span>
-          </div>
+            <span class="location-text">${ANIMEDIC_DATA.baseLocation.name}</span>
+          </button>
         </div>
         <div class="header-right">
-          <button type="button" class="demo-pill-btn" id="open-demo-info-btn">
+          <button type="button" class="demo-pill-btn" id="open-demo-info-btn" title="Demo Info">
             ${this.ICONS.info}
-            <span>Demo Info</span>
+            <span class="demo-text">Demo Info</span>
           </button>
           <a href="profile.html" class="avatar-btn" id="header-avatar-btn" title="${user.fullName}">${user.photo ? `<img src="${user.photo}" alt="${user.fullName}">` : initials}</a>
         </div>
@@ -190,7 +208,24 @@ const AnimedicApp = {
         .join("");
     }
 
+    this.injectMobileDrawer(navItems, activePage);
+    this.injectLocationModal();
     this.injectDemoModal();
+
+    const menuBtn = document.getElementById("open-mobile-menu-btn");
+    if (menuBtn) {
+      menuBtn.addEventListener("click", () => {
+        const dr = document.getElementById("mobile-nav-drawer");
+        if (dr) dr.classList.add("open");
+      });
+    }
+    const locBtn = document.getElementById("open-location-info-btn");
+    if (locBtn) {
+      locBtn.addEventListener("click", () => {
+        const lm = document.getElementById("location-info-modal");
+        if (lm) lm.classList.add("open");
+      });
+    }
     const demoBtn = document.getElementById("open-demo-info-btn");
     if (demoBtn) {
       demoBtn.addEventListener("click", () => this.openDemoModal());
@@ -200,6 +235,72 @@ const AnimedicApp = {
     }
 
     return user;
+  },
+
+  injectMobileDrawer(navItems, activePage) {
+    if (document.getElementById("mobile-nav-drawer")) return;
+    const drawer = document.createElement("div");
+    drawer.id = "mobile-nav-drawer";
+    drawer.className = "mobile-drawer-backdrop";
+    drawer.innerHTML = `
+      <div class="mobile-drawer-panel">
+        <div class="flex-between" style="padding:4px 4px 18px;">
+          <a href="index.html" class="brand-logo" style="padding:0;">
+            <span class="brand-mark">${this.ICONS.paw}</span>
+            <span>Animedic</span>
+          </a>
+          <button type="button" class="btn btn-outline btn-sm" id="close-mobile-drawer-btn" aria-label="Close menu">${this.ICONS.close}</button>
+        </div>
+        <nav class="sidebar-nav">
+          ${navItems
+            .map(
+              item => `
+            <a href="${item.href}" class="nav-link ${activePage === item.id ? "active" : ""}">
+              ${item.icon}
+              <span>${item.label}</span>
+            </a>`
+            )
+            .join("")}
+        </nav>
+        <div class="sidebar-footer">
+          <div><strong>Greater Jakarta MVP</strong></div>
+          <div>Verified Pet Care</div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(drawer);
+    document.getElementById("close-mobile-drawer-btn").onclick = () => drawer.classList.remove("open");
+    drawer.addEventListener("click", (e) => {
+      if (e.target === drawer) drawer.classList.remove("open");
+    });
+  },
+
+  injectLocationModal() {
+    if (document.getElementById("location-info-modal")) return;
+    const modal = document.createElement("div");
+    modal.id = "location-info-modal";
+    modal.className = "modal-backdrop";
+    modal.innerHTML = `
+      <div class="modal-box">
+        <button type="button" class="modal-close" id="close-loc-x" aria-label="Close">${this.ICONS.close}</button>
+        <span class="badge badge-orange mb-2">Simulated Location</span>
+        <h2 style="font-size:1.28rem;margin-bottom:8px;">Active Demo Location</h2>
+        <p style="font-size:0.92rem;color:var(--navy-800);font-weight:600;margin-bottom:8px;">
+          ${ANIMEDIC_DATA.baseLocation.name}
+        </p>
+        <p style="font-size:0.84rem;color:var(--slate-600);margin-bottom:18px;">
+          Coordinates are anchored to Rawamangun (-6.1944, 106.8892) for prototype demonstration. Your real GPS location is not tracked.
+        </p>
+        <button type="button" class="btn btn-primary btn-block" id="close-loc-cta">Close</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    const closeFn = () => modal.classList.remove("open");
+    document.getElementById("close-loc-x").onclick = closeFn;
+    document.getElementById("close-loc-cta").onclick = closeFn;
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeFn();
+    });
   },
 
   injectDemoModal() {

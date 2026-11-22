@@ -28,7 +28,7 @@
     signinForm.style.display = "none";
     signupForm.style.display = "block";
     authTitle.textContent = "Create your Animedic account";
-    authSubtitle.textContent = "Sign up to manage your pets and book verified home-visit care.";
+    authSubtitle.textContent = "Sign up to manage your pets and book verified home visit care.";
   });
 
   document.getElementById("switch-to-signin").addEventListener("click", (e) => {
@@ -36,7 +36,7 @@
     signupForm.style.display = "none";
     signinForm.style.display = "block";
     authTitle.textContent = "Sign in to Animedic";
-    authSubtitle.textContent = "Access your pet health records, consultations, and home-visit bookings.";
+    authSubtitle.textContent = "Access your pet health records, consultations, and home visit bookings.";
   });
 
   signinForm.addEventListener("submit", (e) => {

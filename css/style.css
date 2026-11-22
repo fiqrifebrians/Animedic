@@ -232,7 +232,13 @@ button, input, select, textarea { font-family: inherit; }
 .avatar-btn {
   width: 38px;
   height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
   border-radius: 50%;
+  overflow: hidden;
+  padding: 0;
   background: var(--navy-900);
   color: #FFFFFF;
   font-weight: 700;
@@ -623,8 +629,10 @@ button, input, select, textarea { font-family: inherit; }
   background: #FFFFFF;
   border-radius: var(--radius-xl);
   width: 100%;
-  max-width: 540px;
-  max-height: 90vh;
+  max-width: 520px;
+  max-height: 88dvh;
+  margin: 0 auto;
+  box-sizing: border-box;
   overflow-y: auto;
   padding: 24px;
   box-shadow: var(--shadow-lg);
@@ -1141,4 +1149,195 @@ body {
   width: 16px;
   height: 16px;
   accent-color: var(--orange-primary);
+}
+/* Solid Orange Veterinarian Badge */
+.badge-vet {
+  background: var(--orange-primary);
+  color: #FFFFFF;
+  border: 1px solid var(--orange-primary);
+}
+
+/* Form Input Mobile Overflow & Clipping Prevention */
+.form-group, .grid-2 > *, .grid-3 > * {
+  min-width: 0;
+}
+.form-input, .form-select, .form-textarea, input[type="date"] {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Selectable Service Card List (Home Visit Pre-Booking) */
+.service-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.service-option-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  background: #FFFFFF;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.service-option-card:hover {
+  border-color: var(--orange-border);
+  background: var(--orange-soft);
+}
+
+.service-option-card.selected {
+  border-color: var(--orange-primary);
+  background: var(--orange-soft);
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.12);
+}
+
+.service-option-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--navy-900);
+}
+
+.service-option-price {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--orange-primary);
+  white-space: nowrap;
+}
+
+/* Mobile Hamburger & Slide-Out Navigation Drawer (Mirrors Desktop Sidebar) */
+.mobile-menu-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--slate-200);
+  background: #FFFFFF;
+  color: var(--navy-900);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.mobile-menu-btn:hover { background: var(--slate-100); }
+
+.mobile-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 90;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 220ms ease, visibility 220ms ease;
+}
+.mobile-drawer-backdrop.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.mobile-drawer-panel {
+  width: 268px;
+  max-width: 82vw;
+  height: 100%;
+  background: #FFFFFF;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+  transform: translateX(-100%);
+  transition: transform 240ms ease;
+}
+.mobile-drawer-backdrop.open .mobile-drawer-panel {
+  transform: translateX(0);
+}
+
+@media (min-width: 960px) {
+  .mobile-menu-btn, .mobile-drawer-backdrop { display: none !important; }
+}
+
+/* Mobile Header: Icon-Only Location & Demo Info Buttons */
+.location-pill {
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .top-header { padding: 0 14px; }
+  .location-pill {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  .location-pill .location-text { display: none; }
+  .demo-pill-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  .demo-pill-btn .demo-text { display: none; }
+  .modal-backdrop { padding: 16px; }
+  .modal-box { padding: 20px 18px; }
+}
+
+/* Mobile Consultation: Horizontal Side-Slide Master-Detail View */
+.chat-mobile-back {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--slate-200);
+  background: #FFFFFF;
+  color: var(--navy-900);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 859px) {
+  .chat-viewport {
+    overflow: hidden;
+    width: 100%;
+  }
+  .chat-layout {
+    display: flex;
+    flex-direction: row;
+    width: 200%;
+    gap: 0;
+    transition: transform 260ms ease;
+  }
+  .chat-layout.show-chat {
+    transform: translateX(-50%);
+  }
+  .chat-list-panel,
+  .chat-box {
+    width: 50%;
+    flex-shrink: 0;
+  }
+  .chat-box {
+    height: calc(100dvh - 210px);
+    min-height: 460px;
+  }
+  .chat-mobile-back {
+    display: inline-flex;
+  }
 }
