@@ -34,12 +34,12 @@ const AnimedicState = {
   setSession(email, triggerDemo = true) {
     this._write(STATE_KEYS.SESSION, { email, loggedInAt: new Date().toISOString() });
     if (triggerDemo) {
-      sessionStorage.setItem(STATE_KEYS.DEMO_PENDING, "true");
+      try { sessionStorage.setItem(STATE_KEYS.DEMO_PENDING, "true"); } catch (e) {}
     }
   },
   clearSession() {
     localStorage.removeItem(STATE_KEYS.SESSION);
-    sessionStorage.removeItem(STATE_KEYS.DEMO_PENDING);
+    try { sessionStorage.removeItem(STATE_KEYS.DEMO_PENDING); } catch (e) {}
   },
 
   getCurrentUser() {
@@ -300,9 +300,9 @@ const AnimedicState = {
   },
 
   shouldShowDemoModal() {
-    return sessionStorage.getItem(STATE_KEYS.DEMO_PENDING) === "true";
+    try { return sessionStorage.getItem(STATE_KEYS.DEMO_PENDING) === "true"; } catch (e) { return false; }
   },
   markDemoModalSeen() {
-    sessionStorage.setItem(STATE_KEYS.DEMO_PENDING, "false");
+    try { sessionStorage.setItem(STATE_KEYS.DEMO_PENDING, "false"); } catch (e) {}
   }
 };

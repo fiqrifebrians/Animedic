@@ -155,10 +155,24 @@ const AnimedicApp = {
     this._toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
   },
 
+  isPublicPage() {
+    const body = document.body;
+    if (!body) return false;
+    const page = body.dataset.page || "";
+    return (
+      body.dataset.public === "true" ||
+      page === "index" ||
+      page === "auth" ||
+      Boolean(document.getElementById("landing-screen"))
+    );
+  },
+
   requireAuth() {
     const user = AnimedicState.getCurrentUser();
     if (!user || !user.onboarded) {
-      window.location.replace("auth.html");
+      if (!this.isPublicPage()) {
+        window.location.replace("auth.html");
+      }
       return null;
     }
     this.initPasswordToggles();
