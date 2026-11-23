@@ -204,7 +204,7 @@ const AnimedicApp = {
     if (sidebarEl) {
       sidebarEl.innerHTML = `
         <a href="index.html" class="brand-logo">
-          <span class="brand-mark">${this.ICONS.paw}</span>
+          <span class="brand-mark"><img src="assets/logo.png" alt="Animedic logo"></span>
           <span>Animedic</span>
         </a>
         <nav class="sidebar-nav">
@@ -233,7 +233,7 @@ const AnimedicApp = {
             ${this.ICONS.menu}
           </button>
           <a href="index.html" class="mobile-brand">
-            <span class="brand-mark" style="width:30px;height:30px;">${this.ICONS.paw}</span>
+            <span class="brand-mark" style="width:30px;height:30px;"><img src="assets/logo.png" alt="Animedic logo"></span>
             <span>Animedic</span>
           </a>
           <button type="button" class="location-pill" id="open-location-info-btn" title="Simulated Location">
@@ -317,7 +317,7 @@ const AnimedicApp = {
       <div class="mobile-drawer-panel">
         <div class="flex-between" style="padding:4px 4px 18px;">
           <a href="index.html" class="brand-logo" style="padding:0;">
-            <span class="brand-mark">${this.ICONS.paw}</span>
+            <span class="brand-mark"><img src="assets/logo.png" alt="Animedic logo"></span>
             <span>Animedic</span>
           </a>
           <button type="button" class="btn btn-outline btn-sm" id="close-mobile-drawer-btn" aria-label="Close menu">${this.ICONS.close}</button>
