@@ -6,9 +6,8 @@
   <title>Regulated Pharmacy | Animedic</title>
   <link rel="icon" type="image/png" href="assets/logo.png">
   <link rel="apple-touch-icon" href="assets/logo.png">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/editorial.css">
 </head>
 <body data-page="pharmacy">
   <div class="app-shell">
@@ -182,6 +181,7 @@ if (currentUser) {
       requestAnimationFrame(() => { catView.style.opacity = "1"; });
       renderProducts();
       updateCartBadge();
+      if (window.AnimedicMotion) window.AnimedicMotion.refresh(catView);
     }, 200);
   }
 
@@ -191,6 +191,7 @@ if (currentUser) {
       catView.style.display = "none";
       dirView.style.display = "block";
       dirView.classList.remove("fade-out");
+      if (window.AnimedicMotion) window.AnimedicMotion.refresh(dirView);
     }, 200);
   };
 
@@ -259,8 +260,8 @@ if (currentUser) {
     const deliveryFee = hasPlan ? Math.round(rawDelivery * 0.85) : rawDelivery;
 
     document.getElementById("cart-pharmacy-label").textContent = selectedPharmacy
-      ? `Fulfilled by ${selectedPharmacy.name} to Rawamangun, East Jakarta, Indonesia`
-      : "Delivery to Rawamangun, East Jakarta, Indonesia";
+      ? `Fulfilled by ${selectedPharmacy.name} to East Jakarta, Indonesia`
+      : "Delivery to East Jakarta, Indonesia";
 
     if (cart.length === 0) {
       listEl.innerHTML = '<p style="color:var(--slate-500);font-size:0.88rem;text-align:center;margin-top:40px;">Your pharmacy cart is empty.</p>';
@@ -342,5 +343,10 @@ if (currentUser) {
 }
 
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/motion@11.15.0/dist/motion.js" defer></script>
+  <script src="js/motion-system.js" defer></script>
 </body>
 </html>

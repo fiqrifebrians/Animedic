@@ -1,0 +1,340 @@
+/* Animedic Editorial Typography, Refined Craft & Conflict-Free Motion Layer */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap');
+
+:root {
+  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  --bg-editorial: #FAF9F7;
+  --hairline: #E7E5E0;
+  --hairline-strong: #D6D3CD;
+  --shadow-editorial: 0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.03);
+  --shadow-lifted: 0 12px 28px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+/* Clean, Fitting Font Pairing for Animedic Pet Healthcare */
+html, body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-editorial);
+  animation: none; /* Handled by AnimedicMotion */
+}
+
+h1, h2, .landing-title, .section-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+h3, h4, .brand-logo, .landing-brand, .mobile-brand, .price-tag, .pillar-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+/* Word-by-Word Sideways Fade Wrappers (No Horizontal Clipping) */
+.word-mask {
+  display: inline-block;
+  overflow: visible;
+  vertical-align: baseline;
+}
+
+.word-inner {
+  display: inline-block;
+}
+
+/* Lenis Recommended Base Rules */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Proven OpenStreetMap Direct Iframe Embed & 2-Stage World-to-Local Zoom */
+#demo-leaflet-map,
+#location-leaflet-map,
+.map-frame-wrap {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  min-height: 220px;
+  display: block;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--slate-200);
+  overflow: hidden;
+  background: #EEF2F6;
+  margin-bottom: 14px;
+  z-index: 1;
+}
+
+.osm-map-iframe {
+  width: 100%;
+  height: 220px;
+  min-height: 220px;
+  display: block;
+  border: 0;
+}
+
+.osm-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+.osm-layer-local {
+  z-index: 1;
+  transform-origin: 50% 50%;
+}
+
+.osm-layer-world {
+  z-index: 2;
+  transform-origin: 79.5% 58%;
+}
+
+.osm-pin-badge {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--orange-border);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14);
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--navy-900);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.osm-pin-badge svg {
+  color: var(--orange-primary);
+  flex-shrink: 0;
+}
+
+.map-offline-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(145deg, #FFF7ED 0%, #F8FAFC 100%);
+  color: var(--navy-900);
+  gap: 6px;
+}
+
+.map-offline-fallback strong {
+  font-size: 0.95rem;
+}
+
+.map-offline-fallback span {
+  font-size: 0.78rem;
+  color: var(--slate-600);
+}
+
+.map-offline-fallback a {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--orange-primary);
+  text-decoration: underline;
+}
+
+/* Editorial Craft: Crisp Hairlines, Restrained Elevation & Structured Rhythm */
+.sidebar {
+  background: #FFFFFF;
+  border-right: 1px solid var(--hairline);
+}
+
+.top-header {
+  background: rgba(250, 249, 247, 0.9);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.card {
+  background: #FFFFFF;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  box-shadow: var(--shadow-editorial);
+}
+
+.hero-banner {
+  background: linear-gradient(145deg, #0F172A 0%, #17253B 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 30px 28px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+}
+
+.hero-banner h1 {
+  font-size: 1.85rem;
+  font-weight: 600;
+  line-height: 1.18;
+  margin-bottom: 8px;
+}
+
+@media (min-width: 640px) {
+  .hero-banner h1 {
+    font-size: 2.15rem;
+  }
+}
+
+.section-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 18px;
+}
+
+.card .section-header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--slate-100);
+}
+
+.section-title {
+  font-size: 1.24rem;
+}
+
+.pillar-card {
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  box-shadow: var(--shadow-editorial);
+}
+
+.pillar-icon {
+  border-radius: 10px;
+  border: 1px solid var(--orange-border);
+}
+
+.pet-chip-card {
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  box-shadow: var(--shadow-editorial);
+}
+
+/* Refined Badges: Less Generic AI Pill Clutter */
+.badge {
+  border-radius: 6px;
+  letter-spacing: 0.01em;
+  padding: 3px 9px;
+}
+
+.location-pill, .demo-pill-btn {
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .location-pill, .demo-pill-btn, .mobile-loc-btn {
+    border-radius: 50%;
+  }
+}
+
+/* Editorial Landing Page Polish */
+.landing-screen {
+  background: linear-gradient(180deg, #FFFBF7 0%, #FAF9F7 65%, #F5F3EF 100%);
+}
+
+.landing-title {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.landing-chip {
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: #FFFFFF;
+}
+
+.showcase-card {
+  border: 1px solid var(--hairline-strong);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lifted);
+}
+
+.showcase-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(234, 88, 12, 0.06) 0%, transparent 66%);
+}
+
+.showcase-pill {
+  border-radius: 8px;
+}
+
+/* Auth Card Editorial Refinement */
+.auth-page {
+  background: linear-gradient(165deg, #FFFBF7 0%, #FAF9F7 60%, #F3F1EC 100%);
+}
+
+.auth-card {
+  border: 1px solid var(--hairline-strong);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lifted);
+}
+
+/* =========================================================================
+   CONFLICT ELIMINATION: Separate CSS color/border transitions from GSAP/Motion
+   transforms so entrance tweens and hover micro-interactions NEVER collide.
+   ========================================================================= */
+.card-hover,
+.pillar-card,
+.btn,
+.nav-link,
+.bottom-nav a,
+.tab-btn,
+.select-option-card,
+.service-option-card,
+.landing-cta-btn,
+.pet-check-item {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 260ms;
+  transition-timing-function: ease;
+}
+
+/* Remove competing CSS hover transforms (owned exclusively by Motion) */
+.card-hover:hover,
+.pillar-card:hover,
+.landing-cta-btn:hover,
+.landing-cta-btn:active {
+  transform: none;
+}
+
+.card-hover:hover,
+.pillar-card:hover {
+  box-shadow: var(--shadow-lifted);
+  border-color: var(--orange-border);
+}
+
+/* Disable duplicate CSS entrance keyframes on landing elements (owned by GSAP) */
+.landing-anim {
+  opacity: 1;
+  animation: none;
+}
+
+/* Respect Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  .showcase-pulse-dot,
+  .showcase-pill-top,
+  .showcase-pill-bottom {
+    animation: none !important;
+  }
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+  }
+}

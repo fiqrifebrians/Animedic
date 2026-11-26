@@ -1,7 +1,7 @@
 // Animedic Structured Market Dataset (Anchored at Rawamangun, East Jakarta)
 const ANIMEDIC_DATA = {
   baseLocation: {
-    name: "Rawamangun, East Jakarta, Indonesia",
+    name: "East Jakarta, Indonesia",
     lat: -6.1944,
     lng: 106.8892
   },

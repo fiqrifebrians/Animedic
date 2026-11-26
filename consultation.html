@@ -6,9 +6,8 @@
   <title>Online Consultation | Animedic</title>
   <link rel="icon" type="image/png" href="assets/logo.png">
   <link rel="apple-touch-icon" href="assets/logo.png">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/editorial.css">
 </head>
 <body data-page="consultation">
   <div class="app-shell">
@@ -316,7 +315,11 @@ if (currentUser) {
     vetListEl.querySelectorAll("button").forEach(btn => {
       btn.onclick = () => {
         selectedVet = ANIMEDIC_DATA.vets.find(v => v.id === btn.dataset.vet);
-        renderVetList();
+        vetListEl.querySelectorAll("button[data-vet]").forEach(b => {
+          const isActive = b.dataset.vet === selectedVet.id;
+          b.style.borderColor = isActive ? "var(--orange-primary)" : "var(--slate-200)";
+          b.style.background = isActive ? "var(--orange-soft)" : "#FFFFFF";
+        });
         initChatSession();
         if (chatLayoutEl) chatLayoutEl.classList.add("show-chat");
         if (filterBarEl) filterBarEl.classList.add("consult-filters-hidden");
@@ -547,5 +550,10 @@ if (currentUser) {
 }
 
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/motion@11.15.0/dist/motion.js" defer></script>
+  <script src="js/motion-system.js" defer></script>
 </body>
 </html>

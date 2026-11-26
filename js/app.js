@@ -87,34 +87,6 @@ const AnimedicApp = {
     });
   },
 
-  _attachKeylessTiles(mapInstance) {
-    let fallbackAdded = false;
-    const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
-      maxZoom: 18,
-      attribution: "Tiles &copy; Esri"
-    });
-    esri.on("tileerror", () => {
-      if (fallbackAdded) return;
-      fallbackAdded = true;
-      mapInstance.removeLayer(esri);
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: "&copy; OpenStreetMap contributors"
-      }).addTo(mapInstance);
-    });
-    esri.addTo(mapInstance);
-  },
-
-  _createPinIcon() {
-    return L.divIcon({
-      className: "animedic-map-pin",
-      html: '<svg width="32" height="32" viewBox="0 0 24 24" fill="#EA580C" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3" fill="#FFFFFF"/></svg>',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      tooltipAnchor: [0, -28]
-    });
-  },
-
   formatIDR(amount) {
     return "Rp\u00A0" + Math.round(amount).toLocaleString("id-ID");
   },
@@ -356,12 +328,12 @@ const AnimedicApp = {
         <button type="button" class="modal-close" id="close-loc-x" aria-label="Close">${this.ICONS.close}</button>
         <span class="badge badge-orange mb-2">Simulated Location</span>
         <h2 style="font-size:1.28rem;margin-bottom:10px;">Active Demo Location</h2>
-        <div id="location-leaflet-map"></div>
+        <div id="location-leaflet-map" class="map-frame-wrap"><iframe class="osm-map-iframe" title="East Jakarta, Indonesia Map" src="https://www.openstreetmap.org/export/embed.html?bbox=106.8720%2C-6.2080%2C106.9060%2C-6.1800&amp;layer=mapnik&amp;marker=-6.1944%2C106.8892" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="osm-pin-badge" style="opacity:1;">${this.ICONS.pin}<span>East Jakarta, Indonesia</span></div></div>
         <p style="font-size:0.9rem;color:var(--navy-800);font-weight:600;margin-bottom:6px;">
           ${ANIMEDIC_DATA.baseLocation.name}
         </p>
         <p style="font-size:0.82rem;color:var(--slate-600);margin-bottom:18px;">
-          Coordinates are anchored to Rawamangun (-6.1944, 106.8892) for prototype demonstration. Your real GPS location is not tracked.
+          Coordinates are anchored to East Jakarta, Indonesia (-6.1944, 106.8892) for prototype demonstration. Your real GPS location is not tracked.
         </p>
         <button type="button" class="btn btn-primary btn-block" id="close-loc-cta">Close</button>
       </div>
@@ -376,26 +348,7 @@ const AnimedicApp = {
   },
 
   _initStaticLocationMap() {
-    if (typeof L === "undefined") return;
-    const mapEl = document.getElementById("location-leaflet-map");
-    if (!mapEl) return;
-
-    if (!this._locationMap) {
-      this._locationMap = L.map(mapEl, {
-        zoomControl: false,
-        attributionControl: false
-      }).setView([-6.1944, 106.8892], 14);
-
-      this._attachKeylessTiles(this._locationMap);
-
-      L.marker([-6.1944, 106.8892], { icon: this._createPinIcon() })
-        .addTo(this._locationMap)
-        .bindTooltip("Rawamangun, East Jakarta", { direction: "top", offset: [0, -4] })
-        .openTooltip();
-    }
-
-    this._locationMap.invalidateSize(true);
-    this._locationMap.setView([-6.1944, 106.8892], 14, { animate: false });
+    // Direct OpenStreetMap iframe is mounted in the modal DOM
   },
 
   injectDemoModal() {
@@ -421,10 +374,10 @@ const AnimedicApp = {
         <!-- Slide 2: Simulated Location & Animated Map -->
         <div id="demo-slide-2" class="demo-slide" style="display:none;opacity:0;">
           <span class="badge badge-orange mb-2">Simulated Location</span>
-          <h2 style="font-size:1.28rem;margin-bottom:10px;">Rawamangun, East Jakarta</h2>
-          <div id="demo-leaflet-map"></div>
+          <h2 style="font-size:1.28rem;margin-bottom:10px;">East Jakarta, Indonesia</h2>
+          <div id="demo-leaflet-map" class="map-frame-wrap"><div class="osm-layer osm-layer-local" id="demo-osm-local"><iframe class="osm-map-iframe" title="East Jakarta, Indonesia Street Map" src="https://www.openstreetmap.org/export/embed.html?bbox=106.8720%2C-6.2080%2C106.9060%2C-6.1800&amp;layer=mapnik&amp;marker=-6.1944%2C106.8892" referrerpolicy="no-referrer-when-downgrade"></iframe></div><div class="osm-layer osm-layer-world" id="demo-osm-world"><iframe class="osm-map-iframe" title="World Map Overview" src="https://www.openstreetmap.org/export/embed.html?bbox=-170.0%2C-65.0%2C170.0%2C75.0&amp;layer=mapnik&amp;marker=-6.1944%2C106.8892" referrerpolicy="no-referrer-when-downgrade"></iframe></div><div class="osm-pin-badge" id="demo-osm-pin-badge">${this.ICONS.pin}<span>East Jakarta, Indonesia</span></div></div>
           <div style="display:flex;flex-direction:column;gap:6px;font-size:0.86rem;color:var(--slate-600);margin-bottom:18px;">
-            <p>Your location is automatically set to Rawamangun, East Jakarta, Indonesia (-6.1944, 106.8892).</p>
+            <p>Your location is automatically set to East Jakarta, Indonesia (-6.1944, 106.8892).</p>
             <p>This prototype does not track or use your actual current location.</p>
           </div>
           <div class="flex-between" style="gap:10px;">
@@ -443,7 +396,7 @@ const AnimedicApp = {
     document.body.appendChild(modal);
 
     const closeFn = () => {
-      clearTimeout(this._mapFlyTimer);
+      this._clearDemoMapTimers();
       modal.classList.remove("open");
       AnimedicState.markDemoModalSeen();
     };
@@ -465,7 +418,7 @@ const AnimedicApp = {
     const d2 = document.getElementById("demo-dot-2");
     if (!s1 || !s2) return;
 
-    clearTimeout(this._mapFlyTimer);
+    this._clearDemoMapTimers();
 
     if (slideNum === 1) {
       s2.style.opacity = "0";
@@ -491,44 +444,131 @@ const AnimedicApp = {
     }
   },
 
+  _clearDemoMapTimers() {
+    clearTimeout(this._mapFlyTimer);
+    clearTimeout(this._mapTooltipTimer);
+    if (this._demoMapTl) {
+      try { this._demoMapTl.kill(); } catch (e) {}
+      this._demoMapTl = null;
+    }
+    if (typeof window.gsap !== "undefined") {
+      const worldEl = document.getElementById("demo-osm-world");
+      const localEl = document.getElementById("demo-osm-local");
+      const badgeEl = document.getElementById("demo-osm-pin-badge");
+      if (worldEl) window.gsap.killTweensOf(worldEl);
+      if (localEl) window.gsap.killTweensOf(localEl);
+      if (badgeEl) window.gsap.killTweensOf(badgeEl);
+    }
+  },
+
   _initAndAnimateDemoMap() {
-    if (typeof L === "undefined") return;
-    const mapEl = document.getElementById("demo-leaflet-map");
-    if (!mapEl) return;
+    const worldEl = document.getElementById("demo-osm-world");
+    const localEl = document.getElementById("demo-osm-local");
+    const badgeEl = document.getElementById("demo-osm-pin-badge");
+    if (!worldEl || !localEl) return;
 
-    if (!this._demoMap) {
-      this._demoMap = L.map(mapEl, {
-        zoomControl: false,
-        attributionControl: false
-      }).setView([-2.5, 118.0], 4);
+    this._clearDemoMapTimers();
 
-      this._attachKeylessTiles(this._demoMap);
+    const prefersReduced =
+      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      this._demoMarker = L.marker([-6.1944, 106.8892], { icon: this._createPinIcon() })
-        .addTo(this._demoMap)
-        .bindTooltip("Rawamangun, East Jakarta", { direction: "top", offset: [0, -4] });
+    if (prefersReduced) {
+      worldEl.style.opacity = "0";
+      worldEl.style.pointerEvents = "none";
+      localEl.style.opacity = "1";
+      localEl.style.transform = "";
+      if (badgeEl) badgeEl.style.opacity = "1";
+      return;
     }
 
-    // Reset to full Indonesia view and invalidate size once visible
-    this._demoMap.invalidateSize(true);
-    this._demoMap.setView([-2.5, 118.0], 4, { animate: false });
-    if (this._demoMarker) this._demoMarker.closeTooltip();
+    // Stage 1: Reset immediately to crisp World Map view for 1.0 second
+    worldEl.style.transition = "none";
+    localEl.style.transition = "none";
+    worldEl.style.willChange = "transform, opacity";
+    localEl.style.willChange = "transform, opacity";
+    worldEl.style.opacity = "1";
+    worldEl.style.transform = "scale(1) translateZ(0)";
+    worldEl.style.pointerEvents = "auto";
+    localEl.style.opacity = "0.88";
+    localEl.style.transform = "scale(0.88) translateZ(0)";
+    if (badgeEl) {
+      badgeEl.style.transition = "none";
+      badgeEl.style.opacity = "0";
+      badgeEl.style.transform = "translateY(8px)";
+    }
 
+    // Stage 2: After 1.0s hold, run silky overlapping camera dive into East Jakarta, Indonesia
     this._mapFlyTimer = setTimeout(() => {
-      if (!this._demoMap) return;
-      this._demoMap.invalidateSize(true);
-      this._demoMap.flyTo([-6.1944, 106.8892], 14, { duration: 2.2 });
-      setTimeout(() => {
-        if (this._demoMarker) this._demoMarker.openTooltip();
-      }, 2250);
-    }, 500);
+      if (typeof window.gsap !== "undefined") {
+        const tl = window.gsap.timeline({
+          onComplete: () => {
+            worldEl.style.pointerEvents = "none";
+            worldEl.style.willChange = "auto";
+            localEl.style.willChange = "auto";
+          }
+        });
+        this._demoMapTl = tl;
+
+        // Smooth camera zoom on world map toward Jakarta focal point
+        tl.to(worldEl, {
+          scale: 2.85,
+          duration: 1.85,
+          ease: "expo.inOut",
+          force3D: true
+        }, 0);
+
+        // Delayed silky cross-dissolve so zoom motion feels continuous before fading out
+        tl.to(worldEl, {
+          opacity: 0,
+          duration: 1.2,
+          ease: "sine.inOut"
+        }, 0.55);
+
+        // Preloaded street-level map gently settles into 1:1 scale
+        tl.to(localEl, {
+          scale: 1,
+          opacity: 1,
+          duration: 1.5,
+          ease: "power3.out",
+          force3D: true,
+          clearProps: "transform"
+        }, 0.45);
+
+        if (badgeEl) {
+          tl.to(badgeEl, {
+            opacity: 1,
+            y: 0,
+            duration: 0.72,
+            ease: "power3.out",
+            clearProps: "transform"
+          }, 1.25);
+        }
+      } else {
+        worldEl.style.transition = "transform 1.85s cubic-bezier(0.76, 0, 0.24, 1), opacity 1.2s cubic-bezier(0.37, 0, 0.63, 1) 0.55s";
+        localEl.style.transition = "transform 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.45s, opacity 1.1s ease 0.45s";
+        requestAnimationFrame(() => {
+          worldEl.style.transform = "scale(2.85) translateZ(0)";
+          worldEl.style.opacity = "0";
+          worldEl.style.pointerEvents = "none";
+          localEl.style.transform = "scale(1) translateZ(0)";
+          localEl.style.opacity = "1";
+        });
+        if (badgeEl) {
+          this._mapTooltipTimer = setTimeout(() => {
+            badgeEl.style.transition = "opacity 0.65s ease, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1)";
+            badgeEl.style.opacity = "1";
+            badgeEl.style.transform = "translateY(0)";
+          }, 1250);
+        }
+      }
+    }, 1000);
   },
 
   openDemoModal() {
     const modal = document.getElementById("demo-mode-modal");
     if (!modal) return;
     // Always reset cleanly to Slide 1 on open
-    clearTimeout(this._mapFlyTimer);
+    this._clearDemoMapTimers();
     const s1 = document.getElementById("demo-slide-1");
     const s2 = document.getElementById("demo-slide-2");
     const d1 = document.getElementById("demo-dot-1");

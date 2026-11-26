@@ -6,9 +6,8 @@
   <title>Profile & Pet Plan | Animedic</title>
   <link rel="icon" type="image/png" href="assets/logo.png">
   <link rel="apple-touch-icon" href="assets/logo.png">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/editorial.css">
 </head>
 <body data-page="profile">
   <div class="app-shell">
@@ -36,7 +35,7 @@
         <div style="font-size:0.88rem;display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;">
           <div><strong>Name:</strong> <span id="prof-name"></span></div>
           <div style="overflow-wrap:anywhere;"><strong>Email:</strong> <span id="prof-email"></span></div>
-          <div><strong>Location:</strong> Rawamangun, East Jakarta, Indonesia</div>
+          <div><strong>Location:</strong> East Jakarta, Indonesia</div>
           <div><strong>Active Plan:</strong> <span class="badge badge-orange" id="prof-plan"></span></div>
         </div>
       </div>
@@ -455,7 +454,8 @@ if (currentUser) {
     grid.querySelectorAll(".select-option-card").forEach(btn => {
       btn.onclick = () => {
         draftPetType = btn.dataset.type;
-        renderPetTypeGrid();
+        grid.querySelectorAll(".select-option-card").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
         renderPetPhotoPreview();
       };
     });
@@ -476,7 +476,8 @@ if (currentUser) {
     grid.querySelectorAll(".select-option-card").forEach(btn => {
       btn.onclick = () => {
         draftPetGender = btn.dataset.gender;
-        renderPetGenderGrid();
+        grid.querySelectorAll(".select-option-card").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
       };
     });
   }
@@ -577,5 +578,10 @@ if (currentUser) {
 }
 
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/motion@11.15.0/dist/motion.js" defer></script>
+  <script src="js/motion-system.js" defer></script>
 </body>
 </html>

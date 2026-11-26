@@ -189,6 +189,7 @@
     document.getElementById("wizard-progress").style.width = computeProgressPercent() + "%";
     const container = document.getElementById("wizard-body");
     const step = wizardState.step;
+    container.dataset.wizardStep = String(step);
 
     if (step === 0) {
       const firstName = wizardState.user.fullName.split(" ")[0];
@@ -253,7 +254,8 @@
       container.querySelectorAll(".num-btn").forEach(btn => {
         btn.onclick = () => {
           wizardState.petCount = parseInt(btn.dataset.num, 10);
-          renderWizardStep();
+          container.querySelectorAll(".num-btn").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
         };
       });
       document.getElementById("wiz-back").onclick = () => { wizardState.step--; renderWizardStep(); };
@@ -297,7 +299,10 @@
       container.querySelectorAll(".select-option-card").forEach(card => {
         card.onclick = () => {
           pet.type = card.dataset.type;
-          renderWizardStep();
+          container.querySelectorAll(".select-option-card").forEach(c => c.classList.remove("selected"));
+          card.classList.add("selected");
+          const err = document.getElementById("wiz-err");
+          if (err) err.style.display = "none";
         };
       });
       document.getElementById("wiz-back").onclick = () => { wizardState.step--; renderWizardStep(); };
@@ -370,7 +375,10 @@
       container.querySelectorAll(".select-option-card").forEach(card => {
         card.onclick = () => {
           pet.gender = card.dataset.gender;
-          renderWizardStep();
+          container.querySelectorAll(".select-option-card").forEach(c => c.classList.remove("selected"));
+          card.classList.add("selected");
+          const err = document.getElementById("wiz-err");
+          if (err) err.style.display = "none";
         };
       });
       document.getElementById("wiz-back").onclick = () => { wizardState.step--; renderWizardStep(); };
