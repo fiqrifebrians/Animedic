@@ -1,4 +1,4 @@
-// Animedic Unified Motion & Smooth Scroll Engine (Lenis + GSAP ScrollTrigger + Motion)
+// Animedic Lightweight Component Motion & Smooth Scroll Engine (Lenis + GSAP ScrollTrigger + Motion)
 (function () {
   const prefersReducedMotion =
     window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -62,22 +62,21 @@
       if (prefersReducedMotion || !hasLenis) return;
 
       this.lenis = new window.Lenis({
-        lerp: 0.075,
-        duration: 1.4,
+        lerp: 0.1,
+        duration: 1.0,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: "vertical",
         gestureOrientation: "vertical",
         smoothWheel: true,
-        wheelMultiplier: 0.85,
-        touchMultiplier: 1.35,
+        wheelMultiplier: 0.95,
+        touchMultiplier: 1.4,
         prevent: (node) => {
           if (!node || !node.closest) return false;
           return Boolean(
             node.closest("[data-lenis-prevent]") ||
             node.closest(".modal-backdrop.open") ||
             node.closest(".drawer-backdrop.open") ||
-            node.closest(".mobile-drawer-backdrop.open") ||
-            node.closest(".leaflet-container")
+            node.closest(".mobile-drawer-backdrop.open")
           );
         }
       });
@@ -104,103 +103,8 @@
       return el.offsetParent !== null || style.position === "fixed";
     },
 
-    /* GSAP Word-by-Word Sideways Fade Heading Reveal (Smooth & Snappy) */
-    animateHeadings(root = document) {
-      if (prefersReducedMotion || !hasGSAP) return;
-      const headings = root.querySelectorAll(
-        "h1, h2.section-title, .landing-title, #wizard-body h2"
-      );
-
-      headings.forEach(el => {
-        if (!this._isVisible(el)) return;
-        if (el.dataset.wordsSplit === "true") return;
-        if (el.closest(".modal-backdrop:not(.open)")) return;
-        if (el.children.length > 0) return;
-
-        const rawText = (el.textContent || "").trim();
-        if (!rawText) return;
-
-        el.dataset.wordsSplit = "true";
-        el.setAttribute("aria-label", rawText);
-
-        const words = rawText.split(/\s+/);
-        el.innerHTML = words
-          .map(
-            (w, idx) =>
-              `<span class="word-mask" aria-hidden="true"><span class="word-inner">${w}</span></span>${
-                idx < words.length - 1 ? " " : ""
-              }`
-          )
-          .join("");
-
-        const innerWords = el.querySelectorAll(".word-inner");
-        const rect = el.getBoundingClientRect();
-        const inViewport = rect.top < window.innerHeight * 0.92;
-
-        const tweenConfig = {
-          x: 0,
-          opacity: 1,
-          duration: 0.98,
-          stagger: 0.095,
-          ease: "power3.out",
-          clearProps: "transform,willChange",
-          onStart: () => {
-            innerWords.forEach(w => { w.style.willChange = "transform, opacity"; });
-          }
-        };
-
-        if (!inViewport && hasScrollTrigger) {
-          tweenConfig.scrollTrigger = {
-            trigger: el,
-            start: "top 90%",
-            once: true
-          };
-        }
-
-        window.gsap.fromTo(
-          innerWords,
-          { x: -18, opacity: 0 },
-          tweenConfig
-        );
-      });
-
-      /* Sideways Fade for Subtitles & Supporting Lead Copy */
-      const subTexts = root.querySelectorAll(
-        ".section-sub, .landing-subtitle, .hero-banner p, #auth-subtitle, #wizard-body > p"
-      );
-      subTexts.forEach(el => {
-        if (!this._isVisible(el)) return;
-        if (el.dataset.textFadeDone === "true") return;
-        if (el.closest(".modal-backdrop:not(.open)")) return;
-
-        el.dataset.textFadeDone = "true";
-        const rect = el.getBoundingClientRect();
-        const inViewport = rect.top < window.innerHeight * 0.92;
-
-        const tweenConfig = {
-          x: 0,
-          opacity: 1,
-          duration: 0.92,
-          delay: 0.12,
-          ease: "power3.out",
-          clearProps: "transform,willChange",
-          onStart: () => { el.style.willChange = "transform, opacity"; }
-        };
-
-        if (!inViewport && hasScrollTrigger) {
-          tweenConfig.scrollTrigger = {
-            trigger: el,
-            start: "top 92%",
-            once: true
-          };
-        }
-
-        window.gsap.fromTo(el, { x: -16, opacity: 0 }, tweenConfig);
-      });
-    },
-
-    /* GSAP + ScrollTrigger Smoother Staggered Content & Card Entrance */
-    animateStaggerGroups(root = document) {
+    /* Lightweight Component-Only Fade-In Entrances (Zero Text Animations, First-Appearance Only) */
+    animateComponents(root = document) {
       if (prefersReducedMotion || !hasGSAP) return;
 
       const groupSelectors = [
@@ -238,14 +142,15 @@
         });
 
         const rect = group.getBoundingClientRect();
-        const inViewport = rect.top < window.innerHeight * 0.92;
+        const inViewport = rect.top < window.innerHeight * 0.94;
 
         const toVars = {
           opacity: 1,
           y: 0,
-          duration: 0.88,
-          stagger: 0.11,
-          ease: "power3.out",
+          duration: 0.46,
+          stagger: 0.045,
+          ease: "power2.out",
+          force3D: true,
           clearProps: "transform,willChange",
           onStart: () => {
             children.forEach(c => { c.style.willChange = "transform, opacity"; });
@@ -258,21 +163,22 @@
         if (!inViewport && hasScrollTrigger) {
           toVars.scrollTrigger = {
             trigger: group,
-            start: "top 90%",
+            start: "top 92%",
             once: true
           };
         }
 
-        window.gsap.fromTo(children, { opacity: 0, y: 16 }, toVars);
+        window.gsap.fromTo(children, { opacity: 0, y: 10 }, toVars);
       });
 
+      /* Standalone UI Component Panels (Never plain text elements) */
       const soloSelectors = [
         ".hero-banner",
-        ".landing-brand",
         ".landing-showcase",
         ".landing-cta-group",
         ".notice-banner",
-        ".auth-card"
+        ".auth-card",
+        ".chat-box"
       ];
       const solos = Array.from(root.querySelectorAll(soloSelectors.join(","))).filter(
         el => el.dataset.soloDone !== "true" && this._isVisible(el)
@@ -285,13 +191,14 @@
         });
         window.gsap.fromTo(
           solos,
-          { opacity: 0, y: 12 },
+          { opacity: 0, y: 8 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.95,
-            stagger: 0.12,
-            ease: "power3.out",
+            duration: 0.5,
+            stagger: 0.055,
+            ease: "power2.out",
+            force3D: true,
             clearProps: "transform,willChange",
             onComplete: () => {
               solos.forEach(el => { delete el.dataset.motionEntering; });
@@ -301,7 +208,7 @@
       }
     },
 
-    /* Motion (motion.dev) Smoother Tactile Hover & Press Micro-Interactions */
+    /* Light & Natural Motion Hover / Press Micro-Interactions */
     bindHovers(root = document) {
       if (prefersReducedMotion || !hasMotion) return;
 
@@ -316,8 +223,8 @@
           if (e.pointerType === "touch" || el.dataset.motionEntering === "true") return;
           window.Motion.animate(
             el,
-            { y: -3 },
-            { duration: 0.38, easing: [0.22, 1, 0.36, 1] }
+            { y: -2.5 },
+            { duration: 0.22, easing: [0.22, 1, 0.36, 1] }
           );
         });
 
@@ -326,7 +233,7 @@
           window.Motion.animate(
             el,
             { y: 0 },
-            { duration: 0.38, easing: [0.22, 1, 0.36, 1] }
+            { duration: 0.22, easing: [0.22, 1, 0.36, 1] }
           ).finished.then(() => {
             if (!el.matches(":hover")) el.style.transform = "";
           }).catch(() => {});
@@ -344,8 +251,8 @@
           if (e.pointerType === "touch" || el.disabled || el.dataset.motionEntering === "true") return;
           window.Motion.animate(
             el,
-            { y: -1.5, scale: 1.012 },
-            { duration: 0.32, easing: [0.22, 1, 0.36, 1] }
+            { y: -1, scale: 1.01 },
+            { duration: 0.18, easing: [0.22, 1, 0.36, 1] }
           );
         });
 
@@ -354,7 +261,7 @@
           window.Motion.animate(
             el,
             { y: 0, scale: 1 },
-            { duration: 0.32, easing: [0.22, 1, 0.36, 1] }
+            { duration: 0.18, easing: [0.22, 1, 0.36, 1] }
           ).finished.then(() => {
             if (!el.matches(":hover")) el.style.transform = "";
           }).catch(() => {});
@@ -364,8 +271,8 @@
           if (el.disabled || el.dataset.motionEntering === "true") return;
           window.Motion.animate(
             el,
-            { scale: 0.98 },
-            { duration: 0.12, easing: "ease-out" }
+            { scale: 0.985 },
+            { duration: 0.1, easing: "ease-out" }
           );
         });
 
@@ -374,7 +281,7 @@
           window.Motion.animate(
             el,
             { scale: 1 },
-            { duration: 0.2, easing: [0.22, 1, 0.36, 1] }
+            { duration: 0.16, easing: [0.22, 1, 0.36, 1] }
           ).finished.then(() => {
             if (!el.matches(":hover")) el.style.transform = "";
           }).catch(() => {});
@@ -389,15 +296,15 @@
           if (e.pointerType === "touch") return;
           window.Motion.animate(
             el,
-            { x: 3 },
-            { duration: 0.32, easing: [0.22, 1, 0.36, 1] }
+            { x: 2.5 },
+            { duration: 0.18, easing: [0.22, 1, 0.36, 1] }
           );
         });
         el.addEventListener("pointerleave", () => {
           window.Motion.animate(
             el,
             { x: 0 },
-            { duration: 0.32, easing: [0.22, 1, 0.36, 1] }
+            { duration: 0.18, easing: [0.22, 1, 0.36, 1] }
           ).finished.then(() => {
             if (!el.matches(":hover")) el.style.transform = "";
           }).catch(() => {});
@@ -405,7 +312,7 @@
       });
     },
 
-    /* Sync Lenis & Motion with Modal / Drawer Open & Close */
+    /* Sync Lenis & Lightweight Modal Entrance */
     _observeModalsAndDrawers() {
       const syncScrollLock = () => {
         const anyOpen = Boolean(
@@ -435,8 +342,8 @@
                 if (box && hasMotion && !prefersReducedMotion) {
                   window.Motion.animate(
                     box,
-                    { opacity: [0, 1], y: [10, 0], scale: [0.985, 1] },
-                    { duration: 0.42, easing: [0.22, 1, 0.36, 1] }
+                    { opacity: [0, 1], y: [8, 0], scale: [0.99, 1] },
+                    { duration: 0.26, easing: [0.22, 1, 0.36, 1] }
                   ).finished.then(() => {
                     box.style.transform = "";
                   }).catch(() => {});
@@ -447,7 +354,7 @@
         });
         if (stateChanged) {
           syncScrollLock();
-          if (hasScrollTrigger) setTimeout(() => window.ScrollTrigger.refresh(), 260);
+          if (hasScrollTrigger) setTimeout(() => window.ScrollTrigger.refresh(), 220);
         }
       });
 
@@ -458,7 +365,7 @@
       });
     },
 
-    /* Re-run Stagger & Hover Bindings on Dynamic Grid Updates (Skipping Same-Step Wizard Selections) */
+    /* Only Animate Dynamic Lists on First Appearance; Rebind Hovers Only on Filter/Search/Click */
     _observeDynamicGrids() {
       const dynamicIds = [
         "hv-grid",
@@ -491,7 +398,6 @@
                 toAnimate.add(target);
                 return;
               }
-              // Only animate a dynamic container on its VERY FIRST visible appearance
               if (target.dataset.initialRevealDone === "true") {
                 toHoverOnly.add(target);
               } else {
@@ -512,7 +418,7 @@
             });
             if (this.lenis) this.lenis.resize();
             if (hasScrollTrigger) window.ScrollTrigger.refresh();
-          }, 40);
+          }, 35);
         }
       });
 
@@ -520,8 +426,7 @@
     },
 
     animatePage(root = document) {
-      this.animateHeadings(root);
-      this.animateStaggerGroups(root);
+      this.animateComponents(root);
     },
 
     refresh(root = document) {

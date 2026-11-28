@@ -23,13 +23,20 @@
       <h1 style="font-size:1.45rem;">Select a Pet Pharmacy</h1>
       <p class="section-sub">Choose from verified veterinary pharmacies near your location.</p>
     </div>
-    <select id="pharmacy-sort" class="form-select" style="width:auto;min-width:210px;" aria-label="Sort pharmacies">
-    <option value="distance-asc">Nearest First</option>
-    <option value="distance-desc">Farthest First</option>
-    <option value="price-asc">Price: Lowest to Highest</option>
-    <option value="price-desc">Price: Highest to Lowest</option>
-    <option value="rating-desc">Rating: Highest to Lowest</option>
-    <option value="rating-asc">Rating: Lowest to Highest</option>
+  </div>
+  <div class="filter-bar" style="margin-top:0;">
+    <div class="search-input-wrap">
+      <span class="search-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+      <input type="search" id="pharmacy-dir-search" class="form-input" placeholder="Search pharmacies by name or area..." autocomplete="off" aria-label="Search pharmacies">
+      <button type="button" class="search-clear-btn" id="pharmacy-dir-search-clear" aria-label="Clear search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+    <select id="pharmacy-sort" class="form-select" aria-label="Sort pharmacies">
+      <option value="distance-asc">Nearest First</option>
+      <option value="distance-desc">Farthest First</option>
+      <option value="price-asc">Price: Lowest to Highest</option>
+      <option value="price-desc">Price: Highest to Lowest</option>
+      <option value="rating-desc">Rating: Highest to Lowest</option>
+      <option value="rating-asc">Rating: Lowest to Highest</option>
     </select>
   </div>
   <div class="grid-3" id="pharmacies-grid"></div>
@@ -49,6 +56,14 @@
   </div>
 
   <div id="rx-status-banner" class="mb-3"></div>
+
+  <div class="filter-bar" style="margin-top:0;margin-bottom:14px;">
+    <div class="search-input-wrap">
+      <span class="search-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+      <input type="search" id="pharmacy-product-search" class="form-input" placeholder="Search medications or products by name, category, or usage..." autocomplete="off" aria-label="Search pharmacy products">
+      <button type="button" class="search-clear-btn" id="pharmacy-product-search-clear" aria-label="Clear search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+  </div>
 
   <div class="tabs-bar mb-3" style="flex-wrap:wrap;">
     <button type="button" class="tab-btn active" data-cat="All">All Products</button>
@@ -123,11 +138,26 @@ if (currentUser) {
   const drawer = document.getElementById("cart-drawer");
   const rxUnlocked = Boolean(currentUser.rxUnlocked);
 
+  const pharmacyDirSearchEl = document.getElementById("pharmacy-dir-search");
+  const pharmacyDirSearchClearEl = document.getElementById("pharmacy-dir-search-clear");
+  const pharmacyProdSearchEl = document.getElementById("pharmacy-product-search");
+  const pharmacyProdSearchClearEl = document.getElementById("pharmacy-product-search-clear");
   const pharmacySortEl = document.getElementById("pharmacy-sort");
 
   function renderPharmacyDirectory() {
+    const q = pharmacyDirSearchEl.value.trim().toLowerCase();
     const sortVal = pharmacySortEl.value;
-    const list = [...ANIMEDIC_DATA.pharmacies].sort((a, b) => {
+    pharmacyDirSearchClearEl.classList.toggle("visible", q.length > 0);
+
+    let list = [...ANIMEDIC_DATA.pharmacies];
+    if (q) {
+      list = list.filter(ph =>
+        ph.name.toLowerCase().includes(q) ||
+        ph.location.toLowerCase().includes(q)
+      );
+    }
+
+    list.sort((a, b) => {
       if (sortVal === "distance-asc") return a.distanceKm - b.distanceKm;
       if (sortVal === "distance-desc") return b.distanceKm - a.distanceKm;
       if (sortVal === "price-asc") return a.deliveryFee - b.deliveryFee;
@@ -136,6 +166,24 @@ if (currentUser) {
       if (sortVal === "rating-asc") return a.rating - b.rating;
       return 0;
     });
+
+    if (list.length === 0) {
+      pharmaciesGrid.innerHTML = `
+        <div class="card empty-search-state">
+          <div>No pharmacies match "${pharmacyDirSearchEl.value.trim()}".</div>
+          <button type="button" class="btn btn-outline btn-sm" id="pharm-dir-reset-btn">Clear Search</button>
+        </div>
+      `;
+      const resetBtn = document.getElementById("pharm-dir-reset-btn");
+      if (resetBtn) {
+        resetBtn.onclick = () => {
+          pharmacyDirSearchEl.value = "";
+          pharmacyDirSearchEl.focus();
+          renderPharmacyDirectory();
+        };
+      }
+      return;
+    }
 
     pharmaciesGrid.innerHTML = list.map(ph => `
       <div class="card card-hover provider-card" style="cursor:pointer;" data-pharm="${ph.id}">
@@ -168,6 +216,18 @@ if (currentUser) {
     });
   }
 
+  pharmacyDirSearchEl.oninput = renderPharmacyDirectory;
+  pharmacyDirSearchClearEl.onclick = () => {
+    pharmacyDirSearchEl.value = "";
+    pharmacyDirSearchEl.focus();
+    renderPharmacyDirectory();
+  };
+  pharmacyProdSearchEl.oninput = renderProducts;
+  pharmacyProdSearchClearEl.onclick = () => {
+    pharmacyProdSearchEl.value = "";
+    pharmacyProdSearchEl.focus();
+    renderProducts();
+  };
   pharmacySortEl.onchange = renderPharmacyDirectory;
   renderPharmacyDirectory();
 
@@ -209,9 +269,39 @@ if (currentUser) {
   }
 
   function renderProducts() {
-    const items = activeCat === "All"
-      ? ANIMEDIC_DATA.pharmacy
+    const q = pharmacyProdSearchEl.value.trim().toLowerCase();
+    pharmacyProdSearchClearEl.classList.toggle("visible", q.length > 0);
+
+    let items = activeCat === "All"
+      ? [...ANIMEDIC_DATA.pharmacy]
       : ANIMEDIC_DATA.pharmacy.filter(p => p.category === activeCat);
+
+    if (q) {
+      items = items.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q)
+      );
+    }
+
+    if (items.length === 0) {
+      grid.innerHTML = `
+        <div class="card empty-search-state">
+          <div>No medications or pet care products match your current search.</div>
+          <button type="button" class="btn btn-outline btn-sm" id="pharm-prod-reset-btn">Reset Search & Category</button>
+        </div>
+      `;
+      const resetBtn = document.getElementById("pharm-prod-reset-btn");
+      if (resetBtn) {
+        resetBtn.onclick = () => {
+          pharmacyProdSearchEl.value = "";
+          activeCat = "All";
+          document.querySelectorAll(".tabs-bar .tab-btn").forEach(b => b.classList.toggle("active", b.dataset.cat === "All"));
+          renderProducts();
+        };
+      }
+      return;
+    }
 
     grid.innerHTML = items.map(p => {
       const locked = p.requiresPrescription && !rxUnlocked;

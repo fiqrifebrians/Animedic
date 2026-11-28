@@ -40,8 +40,9 @@
         </div>
       </div>
     </div>
-    <div style="border-top:1px solid var(--slate-100);padding-top:12px;display:flex;justify-content:flex-end;">
-      <button type="button" class="btn btn-danger-outline btn-sm" id="signout-btn">Sign Out</button>
+    <div class="account-actions-footer">
+      <button type="button" class="btn btn-outline btn-sm" id="signout-btn">Sign Out</button>
+      <button type="button" class="btn btn-danger-outline btn-sm" id="delete-account-open-btn">Delete Account</button>
     </div>
   </div>
 
@@ -220,6 +221,24 @@
     <div class="flex-between">
       <button type="button" class="btn btn-outline" id="keep-plan-btn">Keep Plan</button>
       <button type="button" class="btn btn-danger" id="confirm-cancel-plan-btn">Confirm Cancellation</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Account Confirmation Modal -->
+<div class="modal-backdrop" id="delete-account-modal">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="delete-account-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <span class="badge badge-red mb-2">Permanent Action</span>
+    <h2 style="font-size:1.28rem;margin-bottom:8px;">Delete Your Account?</h2>
+    <p style="font-size:0.88rem;color:var(--slate-600);margin-bottom:20px;">
+      This will permanently remove your Animedic account, registered pet profiles, booking history, and medical records stored on this device. This action cannot be undone.
+    </p>
+    <div class="flex-between" style="gap:10px;">
+      <button type="button" class="btn btn-outline" id="delete-account-cancel-btn">Cancel</button>
+      <button type="button" class="btn btn-danger" id="delete-account-confirm-btn">Yes, Delete Account</button>
     </div>
   </div>
 </div>
@@ -572,6 +591,19 @@ if (currentUser) {
   document.getElementById("signout-btn").onclick = () => {
     AnimedicState.clearSession();
     window.location.replace("auth.html");
+  };
+
+  const deleteAcctModal = document.getElementById("delete-account-modal");
+  document.getElementById("delete-account-open-btn").onclick = () => deleteAcctModal.classList.add("open");
+  document.getElementById("delete-account-close").onclick = () => deleteAcctModal.classList.remove("open");
+  document.getElementById("delete-account-cancel-btn").onclick = () => deleteAcctModal.classList.remove("open");
+  deleteAcctModal.addEventListener("click", (e) => {
+    if (e.target === deleteAcctModal) deleteAcctModal.classList.remove("open");
+  });
+  document.getElementById("delete-account-confirm-btn").onclick = () => {
+    AnimedicState.deleteCurrentAccount();
+    deleteAcctModal.classList.remove("open");
+    window.location.replace("index.html");
   };
 
   renderProfile();

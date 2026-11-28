@@ -103,6 +103,29 @@ const AnimedicState = {
     return { ok: true, user: users[idx] };
   },
 
+  deleteCurrentAccount() {
+    const session = this.getSession();
+    if (!session || !session.email) return { ok: false, error: "No active session." };
+    const emailLower = session.email.toLowerCase();
+
+    const users = this.getUsers().filter(u => u.email.toLowerCase() !== emailLower);
+    this.saveUsers(users);
+
+    const bookings = this._read(STATE_KEYS.BOOKINGS, []).filter(
+      b => (b.userEmail || "").toLowerCase() !== emailLower
+    );
+    this._write(STATE_KEYS.BOOKINGS, bookings);
+
+    const records = this._read(STATE_KEYS.RECORDS, []).filter(
+      r => (r.userEmail || "").toLowerCase() !== emailLower
+    );
+    this._write(STATE_KEYS.RECORDS, records);
+
+    this.saveCart([]);
+    this.clearSession();
+    return { ok: true };
+  },
+
   registerUser({ fullName, email, password }) {
     const users = this.getUsers();
     if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {

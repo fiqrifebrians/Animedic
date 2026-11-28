@@ -21,7 +21,15 @@
     <h1 style="font-size:1.45rem;">Verified Pet Boarding & Sitters</h1>
     <p class="section-sub">Hygiene-audited pet hotels and home sitters near your location.</p>
   </div>
-  <select id="hotel-sort" class="form-select" style="width:auto;min-width:210px;" aria-label="Sort pet hotels">
+</div>
+
+<div class="filter-bar" style="margin-top:0;">
+  <div class="search-input-wrap">
+    <span class="search-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+    <input type="search" id="hotel-search" class="form-input" placeholder="Search hotels or sitters by name, area, or pet type..." autocomplete="off" aria-label="Search pet hotels and sitters">
+    <button type="button" class="search-clear-btn" id="hotel-search-clear" aria-label="Clear search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+  </div>
+  <select id="hotel-sort" class="form-select" aria-label="Sort pet hotels">
     <option value="distance-asc">Nearest First</option>
     <option value="distance-desc">Farthest First</option>
     <option value="price-asc">Price: Lowest to Highest</option>
@@ -114,11 +122,27 @@ if (currentUser) {
   const petBoxEl = document.getElementById("hotel-pet-checkboxes");
   const petErrEl = document.getElementById("hotel-pet-err");
 
+  const hotelSearchEl = document.getElementById("hotel-search");
+  const hotelSearchClearEl = document.getElementById("hotel-search-clear");
   const hotelSortEl = document.getElementById("hotel-sort");
 
   function renderHotels() {
+    const q = hotelSearchEl.value.trim().toLowerCase();
     const sortVal = hotelSortEl.value;
-    const list = [...ANIMEDIC_DATA.petHotels].sort((a, b) => {
+    hotelSearchClearEl.classList.toggle("visible", q.length > 0);
+
+    let list = [...ANIMEDIC_DATA.petHotels];
+    if (q) {
+      list = list.filter(h =>
+        h.name.toLowerCase().includes(q) ||
+        h.location.toLowerCase().includes(q) ||
+        h.type.toLowerCase().includes(q) ||
+        h.supportedPets.some(t => t.toLowerCase().includes(q)) ||
+        h.amenities.some(a => a.toLowerCase().includes(q))
+      );
+    }
+
+    list.sort((a, b) => {
       if (sortVal === "distance-asc") return a.distanceKm - b.distanceKm;
       if (sortVal === "distance-desc") return b.distanceKm - a.distanceKm;
       if (sortVal === "price-asc") return a.pricePerNight - b.pricePerNight;
@@ -127,6 +151,24 @@ if (currentUser) {
       if (sortVal === "rating-asc") return a.rating - b.rating;
       return 0;
     });
+
+    if (list.length === 0) {
+      grid.innerHTML = `
+        <div class="card empty-search-state">
+          <div>No pet hotels or sitters match "${hotelSearchEl.value.trim()}".</div>
+          <button type="button" class="btn btn-outline btn-sm" id="hotel-empty-reset-btn">Clear Search</button>
+        </div>
+      `;
+      const resetBtn = document.getElementById("hotel-empty-reset-btn");
+      if (resetBtn) {
+        resetBtn.onclick = () => {
+          hotelSearchEl.value = "";
+          hotelSearchEl.focus();
+          renderHotels();
+        };
+      }
+      return;
+    }
 
     grid.innerHTML = list.map(h => `
       <div class="card card-hover provider-card">
@@ -214,6 +256,12 @@ if (currentUser) {
     if (count > 0) petErrEl.style.display = "none";
   }
 
+  hotelSearchEl.oninput = renderHotels;
+  hotelSearchClearEl.onclick = () => {
+    hotelSearchEl.value = "";
+    hotelSearchEl.focus();
+    renderHotels();
+  };
   hotelSortEl.onchange = renderHotels;
   renderHotels();
 

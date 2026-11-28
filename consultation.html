@@ -30,6 +30,11 @@
 </div>
 
 <div class="filter-bar" id="consult-filter-bar" style="margin-top:0;">
+  <div class="search-input-wrap">
+    <span class="search-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+    <input type="search" id="consult-search" class="form-input" placeholder="Search doctors by name, specialty, or area..." autocomplete="off" aria-label="Search veterinarians">
+    <button type="button" class="search-clear-btn" id="consult-search-clear" aria-label="Clear search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+  </div>
   <select id="consult-pet-filter" class="form-select">
     <option value="All">All Pet Types</option>
     <option value="Cat">Cat</option>
@@ -189,6 +194,8 @@ if (currentUser) {
   const petBoxEl = document.getElementById("consult-pet-checkboxes");
   const selectAllEl = document.getElementById("consult-select-all");
   const petErrEl = document.getElementById("consult-pet-err");
+  const consultSearch = document.getElementById("consult-search");
+  const consultSearchClear = document.getElementById("consult-search-clear");
   const petFilter = document.getElementById("consult-pet-filter");
   const specFilter = document.getElementById("consult-specialty-filter");
   const vetListEl = document.getElementById("consult-vet-list");
@@ -274,16 +281,41 @@ if (currentUser) {
   }
 
   function renderVetList() {
+    const q = consultSearch.value.trim().toLowerCase();
     const pType = petFilter.value;
     const spec = specFilter.value;
     const hasPlan = AnimedicState.isMonthlyPlanActive();
 
+    consultSearchClear.classList.toggle("visible", q.length > 0);
+
     let list = [...ANIMEDIC_DATA.vets];
+    if (q) {
+      list = list.filter(v =>
+        v.name.toLowerCase().includes(q) ||
+        v.specialty.toLowerCase().includes(q) ||
+        v.location.toLowerCase().includes(q) ||
+        v.supportedPets.some(t => t.toLowerCase().includes(q))
+      );
+    }
     if (pType !== "All") list = list.filter(v => v.supportedPets.includes(pType));
     if (spec !== "All") list = list.filter(v => v.specialty === spec);
 
     if (list.length === 0) {
-      vetListEl.innerHTML = '<div style="font-size:0.84rem;color:var(--slate-500);padding:12px;">No veterinarians match these filters.</div>';
+      vetListEl.innerHTML = `
+        <div class="empty-search-state" style="padding:18px 12px;">
+          <div>No doctors match your search or filters.</div>
+          <button type="button" class="btn btn-outline btn-sm" id="consult-reset-filters-btn">Reset Filters</button>
+        </div>
+      `;
+      const resetBtn = document.getElementById("consult-reset-filters-btn");
+      if (resetBtn) {
+        resetBtn.onclick = () => {
+          consultSearch.value = "";
+          petFilter.value = "All";
+          specFilter.value = "All";
+          renderVetList();
+        };
+      }
       return;
     }
 
@@ -541,6 +573,12 @@ if (currentUser) {
     AnimedicApp.showToast("Payment successful. Consultation chat unlocked.");
   };
 
+  consultSearch.oninput = renderVetList;
+  consultSearchClear.onclick = () => {
+    consultSearch.value = "";
+    consultSearch.focus();
+    renderVetList();
+  };
   petFilter.onchange = renderVetList;
   specFilter.onchange = renderVetList;
 
